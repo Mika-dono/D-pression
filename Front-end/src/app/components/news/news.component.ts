@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-news',
   standalone: true,
   templateUrl: './news.component.html',
-  styleUrls: ['./news.css']
+  styleUrls: ['./news.component.css']
 })
 export class NewsComponent {}

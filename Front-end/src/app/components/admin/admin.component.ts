@@ -359,6 +359,28 @@ export class AdminComponent implements OnInit {
     this.activeSection = section;
   }
 
+  getSectionTitle(): string {
+    const titles: { [key: string]: string } = {
+      weekly: 'Planning Hebdomadaire',
+      objectives: 'Objectifs de la Semaine',
+      events: 'Gestion des Événements',
+      matches: 'Gestion des Matchs',
+      scrims: 'Demandes de Scrims'
+    };
+    return titles[this.activeSection] || 'Panel Admin';
+  }
+
+  getSectionLabel(section: string): string {
+    const labels: { [key: string]: string } = {
+      weekly: 'Planning',
+      objectives: 'Objectifs',
+      events: 'Événements',
+      matches: 'Matchs',
+      scrims: 'Scrims'
+    };
+    return labels[section] || section;
+  }
+
   formatDate(date: string): string {
     if (!date) return 'Date à définir';
     const d = new Date(`${date}T00:00:00`);

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-membership',
   standalone: true,
-  templateUrl: './membership.html',
-  styleUrls: ['./membership.css']
+  templateUrl: './membership.component.html',
+  styleUrls: ['./membership.component.css']
 })
 export class MembershipComponent {}

@@ -1,1 +1,292 @@
-<h1>Admin</h1>
+<!-- Écran de connexion -->
+<div *ngIf="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-black">
+  <div class="bg-[#1A1A1A] border border-gray-700 rounded-lg p-8 w-full max-w-md shadow-lg">
+    <h1 class="text-3xl font-bold text-white mb-2">Console Admin</h1>
+    <p class="text-gray-400 text-sm mb-6">Gestion KJX</p>
+    
+    <form (ngSubmit)="login()" class="space-y-4" #loginForm="ngForm">
+      <div>
+        <label class="block text-white text-sm font-semibold mb-2">Identifiant</label>
+        <input type="text" [(ngModel)]="credentials.username" name="username" 
+               class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded text-white focus:border-red-600 focus:outline-none" 
+               placeholder="admin@kjx.gg" required>
+      </div>
+      <div>
+        <label class="block text-white text-sm font-semibold mb-2">Mot de passe</label>
+        <input type="password" [(ngModel)]="credentials.password" name="password" 
+               class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded text-white focus:border-red-600 focus:outline-none" 
+               placeholder="••••••" required>
+      </div>
+      <button type="submit" class="w-full px-4 py-3 bg-red-600 text-white rounded font-semibold hover:bg-red-700 transition">
+        Connexion
+      </button>
+    </form>
+    
+    <div class="mt-6 p-4 bg-gray-900 rounded text-xs text-gray-400 space-y-1">
+      <p><strong>Identifiant:</strong> admin</p>
+      <p><strong>Mot de passe:</strong> admin123</p>
+    </div>
+  </div>
+</div>
+
+<!-- Panel Admin -->
+<div *ngIf="isLoggedIn" class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="p-4 border-b border-white/10 sticky top-0 bg-[#0f0f11] z-10">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-white font-bold text-lg">KJX</h2>
+            <p class="text-gray-400 text-xs">Console Admin</p>
+          </div>
+          <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
+            {{ adminName.charAt(0).toUpperCase() }}
+          </div>
+        </div>
+      </div>
+
+      <nav class="space-y-2 p-4">
+        <button (click)="switchSection('dashboard')" 
+                [class.active]="activeSection === 'dashboard'"
+                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
+                [ngClass]="activeSection === 'dashboard' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
+          📊 Dashboard
+        </button>
+        <button (click)="switchSection('scrims')" 
+                [class.active]="activeSection === 'scrims'"
+                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
+                [ngClass]="activeSection === 'scrims' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
+          🎮 Scrims
+        </button>
+        <button (click)="switchSection('schedule')" 
+                [class.active]="activeSection === 'schedule'"
+                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
+                [ngClass]="activeSection === 'schedule' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
+          📅 Planning
+        </button>
+        <button (click)="switchSection('events')" 
+                [class.active]="activeSection === 'events'"
+                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
+                [ngClass]="activeSection === 'events' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
+          🎪 Events
+        </button>
+        <button (click)="switchSection('matches')" 
+                [class.active]="activeSection === 'matches'"
+                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
+                [ngClass]="activeSection === 'matches' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
+          ⚡ Matches
+        </button>
+        <button (click)="switchSection('objectives')" 
+                [class.active]="activeSection === 'objectives'"
+                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
+                [ngClass]="activeSection === 'objectives' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
+          🎯 Objectifs
+        </button>
+      </nav>
+
+      <div class="absolute bottom-4 left-4 right-4 space-y-2">
+        <div class="text-xs text-gray-500 px-2">Bienvenue, {{ adminName }}</div>
+        <button (click)="logout()" class="w-full px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition text-sm font-medium">
+          🚪 Déconnexion
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <section class="main-content">
+      <header class="sticky top-0 bg-black/80 border-b border-white/10 p-6 z-10">
+        <div class="flex items-center justify-between">
+          <h1 class="text-3xl font-bold text-white" id="section-title">Dashboard</h1>
+          <span class="text-gray-400 text-sm">Console de gestion</span>
+        </div>
+      </header>
+
+      <!-- Dashboard Section -->
+      <div *ngIf="activeSection === 'dashboard'" class="admin-panel">
+        <div class="space-y-6">
+          <!-- KPIs -->
+          <div class="grid md:grid-cols-4 gap-4">
+            <div class="bg-gray-900 border border-gray-700 rounded p-6 text-center">
+              <div class="text-red-600 text-3xl font-bold">{{ getPendingCount() }}</div>
+              <div class="text-gray-400 text-xs mt-2">EN ATTENTE</div>
+            </div>
+            <div class="bg-gray-900 border border-gray-700 rounded p-6 text-center">
+              <div class="text-green-500 text-3xl font-bold">{{ getApprovedCount() }}</div>
+              <div class="text-gray-400 text-xs mt-2">APPROUVÉS</div>
+            </div>
+            <div class="bg-gray-900 border border-gray-700 rounded p-6 text-center">
+              <div class="text-yellow-500 text-3xl font-bold">{{ getRejectedCount() }}</div>
+              <div class="text-gray-400 text-xs mt-2">REFUSÉS</div>
+            </div>
+            <div class="bg-gray-900 border border-gray-700 rounded p-6 text-center">
+              <div class="text-blue-500 text-3xl font-bold">{{ scrimRequests.length }}</div>
+              <div class="text-gray-400 text-xs mt-2">TOTAL SCRIMS</div>
+            </div>
+          </div>
+
+          <!-- Derniers Scrims -->
+          <div class="border border-gray-700 rounded-lg p-6 bg-gray-900/50">
+            <h2 class="text-lg font-bold text-white mb-4">📋 Demandes Récentes</h2>
+            <div class="space-y-3 max-h-96 overflow-y-auto">
+              <div *ngFor="let scrim of scrimRequests.slice(0, 5)" class="border border-gray-700 rounded p-4 bg-gray-800/50 flex items-center justify-between">
+                <div>
+                  <p class="text-white font-medium">{{ scrim.team }}</p>
+                  <p class="text-gray-400 text-xs">{{ scrim.date }}</p>
+                </div>
+                <span [ngClass]="'px-3 py-1 rounded text-xs font-bold ' + getBadgeClass(scrim.status)" class="text-white">
+                  {{ scrim.status.toUpperCase() }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrims Section -->
+      <div *ngIf="activeSection === 'scrims'" class="admin-panel">
+        <h2 class="text-2xl font-bold text-white mb-6">Gestion des Scrims</h2>
+        
+        <div class="space-y-4 max-h-96 overflow-y-auto">
+          <div *ngFor="let scrim of scrimRequests; let i = index" class="border border-gray-700 rounded-lg p-6 bg-gray-900/50 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-white font-bold">{{ scrim.team }}</h3>
+                <p class="text-gray-400 text-xs">{{ scrim.date }}</p>
+              </div>
+              <span [ngClass]="'px-3 py-1 rounded text-xs font-bold ' + getBadgeClass(scrim.status)" class="text-white">
+                {{ scrim.status.toUpperCase() }}
+              </span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 text-sm">
+              <button (click)="updateScrimStatus(scrim.id, 'pending')" 
+                      class="px-3 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-xs font-semibold">
+                Attente
+              </button>
+              <button (click)="updateScrimStatus(scrim.id, 'approved')" 
+                      class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-semibold">
+                Approuver
+              </button>
+              <button (click)="updateScrimStatus(scrim.id, 'rejected')" 
+                      class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-semibold">
+                Refuser
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule Section -->
+      <div *ngIf="activeSection === 'schedule'" class="admin-panel">
+        <h2 class="text-2xl font-bold text-white mb-6">Planning</h2>
+        
+        <form (ngSubmit)="saveSchedule()" class="space-y-4">
+          <div>
+            <label class="block text-white text-sm font-semibold mb-2">Sélectionner le jour</label>
+            <select [(ngModel)]="selectedDay" name="day" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
+              <option>LUNDI</option>
+              <option>MARDI</option>
+              <option>MERCREDI</option>
+              <option>JEUDI</option>
+              <option>VENDREDI</option>
+              <option>SAMEDI</option>
+              <option>DIMANCHE</option>
+            </select>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-white text-sm font-semibold mb-2">Heure début</label>
+              <input type="time" [(ngModel)]="schedule[selectedDay]" name="start" 
+                     class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
+            </div>
+            <div>
+              <label class="block text-white text-sm font-semibold mb-2">Heure fin</label>
+              <input type="time" name="end" 
+                     class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
+            </div>
+            <div>
+              <label class="block text-white text-sm font-semibold mb-2">Type</label>
+              <select name="type" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
+                <option>Match</option>
+                <option>Scrim</option>
+                <option>Entraînement</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full px-4 py-3 bg-red-600 text-white rounded font-semibold hover:bg-red-700 transition">
+            Mettre à jour le planning
+          </button>
+        </form>
+
+        <div class="mt-6 p-4 bg-gray-900 border border-gray-700 rounded">
+          <p class="text-gray-400 text-sm">Planning pour {{ selectedDay }}: <strong class="text-white">{{ schedule[selectedDay] || 'Non défini' }}</strong></p>
+        </div>
+      </div>
+
+      <!-- Events Section -->
+      <div *ngIf="activeSection === 'events'" class="admin-panel">
+        <h2 class="text-2xl font-bold text-white mb-6">Événements</h2>
+        <div class="bg-gray-900 border border-yellow-500/30 rounded p-6 text-center">
+          <p class="text-yellow-500 text-sm">⚠️ En développement</p>
+          <p class="text-gray-400 text-xs mt-2">Gestion complète des événements à venir</p>
+        </div>
+      </div>
+
+      <!-- Matches Section -->
+      <div *ngIf="activeSection === 'matches'" class="admin-panel">
+        <h2 class="text-2xl font-bold text-white mb-6">Matches</h2>
+        <div class="bg-gray-900 border border-yellow-500/30 rounded p-6 text-center">
+          <p class="text-yellow-500 text-sm">⚠️ En développement</p>
+          <p class="text-gray-400 text-xs mt-2">Suivi des matchs en temps réel</p>
+        </div>
+      </div>
+
+      <!-- Objectives Section -->
+      <div *ngIf="activeSection === 'objectives'" class="admin-panel">
+        <h2 class="text-2xl font-bold text-white mb-6">Objectifs</h2>
+        <div class="bg-gray-900 border border-yellow-500/30 rounded p-6 text-center">
+          <p class="text-yellow-500 text-sm">⚠️ En développement</p>
+          <p class="text-gray-400 text-xs mt-2">Gestion des objectifs équipe</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .admin-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .sidebar {
+    width: 280px;
+    background: #1a1a1a;
+    border-right: 1px solid #333;
+    position: relative;
+  }
+  
+  .main-content {
+    flex: 1;
+    background: #0f0f11;
+    overflow-y: auto;
+  }
+  
+  .nav-item {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+  }
+  
+  .nav-item.active {
+    border-left-color: #e60012;
+  }
+  
+  .admin-panel {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.5);
+  }
+</style>
+
+

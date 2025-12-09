@@ -1,1 +1,74 @@
-<h1>Membership</h1>
+<header class="sticky top-0 z-40 backdrop-blur bg-black/70 border-b border-white/10">
+  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="bg-primary px-3 py-2 rounded-md font-bold tracking-wide">KJX</div>
+      <nav class="hidden md:flex items-center space-x-6 text-sm uppercase tracking-wide text-white/80">
+        <a routerLink="/" class="hover:text-white">Accueil</a>
+        <a routerLink="/teams" class="hover:text-white">Rosters</a>
+        <a routerLink="/schedule" class="hover:text-white">Calendrier</a>
+        <a routerLink="/shop" class="hover:text-white">Boutique</a>
+        <a routerLink="/news" class="hover:text-white">News</a>
+      </nav>
+    </div>
+    <a routerLink="/" class="px-4 py-2 rounded-full bg-primary hover:bg-red-700 transition font-semibold text-sm">Retour</a>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-12 space-y-10">
+  <section class="space-y-4">
+    <p class="text-primary uppercase text-xs tracking-[0.3em]">Membership</p>
+    <h1 class="text-4xl font-bold">Formules & avantages</h1>
+    <p class="text-white/70 max-w-3xl">Rejoignez le cercle KJX : contenus backstage, réductions boutique, Q&A joueurs et salons privés. Les cartes ci-dessous consomment l'API `/api/memberships` ou vos données Supabase si vous avez branché les tables.</p>
+    <div class="flex flex-wrap gap-3">
+      <a routerLink="/shop" class="px-4 py-2 rounded-full bg-primary hover:bg-red-700 transition font-semibold text-sm">Profiter des réductions</a>
+      <span class="px-4 py-2 rounded-full border border-white/20 text-sm text-white/60">Pilotage sécurisé admin</span>
+    </div>
+  </section>
+
+  <section id="membership-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div *ngFor="let membership of memberships" class="border border-white/10 rounded-2xl p-6 bg-gradient-to-br from-primary/10 to-black/50 space-y-4 hover:border-primary/50 transition">
+      <div>
+        <h3 class="text-xl font-bold text-white">{{ membership.name }}</h3>
+        <p class="text-primary text-2xl font-bold mt-2">{{ membership.price }}€<span class="text-white/50 text-sm">/mois</span></p>
+      </div>
+      <ul class="space-y-2 text-white/70 text-sm">
+        <li *ngFor="let benefit of membership.benefits">✓ {{ benefit }}</li>
+      </ul>
+      <button class="w-full mt-4 px-4 py-2 bg-primary text-white rounded font-semibold hover:bg-red-700 transition text-sm">
+        Choisir ce plan
+      </button>
+    </div>
+  </section>
+
+  <section class="border border-white/10 rounded-2xl p-6 bg-white/5 space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-primary text-xs uppercase tracking-[0.2em]">Fidélité</p>
+        <h2 class="text-2xl font-semibold">Points, badges et support</h2>
+      </div>
+      <span class="text-white/60 text-sm">Gestion admin sécurisée</span>
+    </div>
+    <ul class="grid md:grid-cols-2 gap-3 text-white/70 text-sm">
+      <li>✓ Points, niveaux et badges gérés côté Supabase ou en données fictives.</li>
+      <li>✓ Notifications push/email pilotées dans l'admin (ServiceNotification du diagramme).</li>
+      <li>✓ Support premium avec tickets prioritaires et suivi SLA.</li>
+      <li>✓ Journaux d'audit disponibles côté back-office.</li>
+    </ul>
+  </section>
+
+  <section class="border border-white/10 rounded-2xl p-6 bg-gradient-to-br from-primary/10 to-black/50 space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-primary text-xs uppercase tracking-[0.2em]">Communauté</p>
+        <h2 class="text-2xl font-semibold">Onboarding rapide</h2>
+      </div>
+      <span class="text-white/60 text-sm">Prêt pour les membres</span>
+    </div>
+    <ul class="grid md:grid-cols-3 gap-3 text-white/70 text-sm">
+      <li>✓ Templates d'emails de bienvenue et relances d'expiration.</li>
+      <li>✓ Accès Discord/privé configurable par niveau.</li>
+      <li>✓ Hooks web pour synchroniser vos autres outils.</li>
+    </ul>
+  </section>
+</main>
+

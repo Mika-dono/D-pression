@@ -1,1 +1,78 @@
-<h1>Schedule</h1>
+<div class="bg-black text-white">
+  <!-- Header -->
+  <header class="border-b border-white/10 bg-black/80">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-red-600 uppercase text-xs tracking-widest">Calendrier</p>
+          <h1 class="text-3xl font-bold">Matches, scrims et rencontres</h1>
+        </div>
+        <a routerLink="/" class="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 transition font-semibold text-sm">Retour</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-12 space-y-10">
+    <!-- Description -->
+    <section class="space-y-4">
+      <p class="text-gray-400 max-w-3xl">Les événements listés ci-dessous sont synchronisés avec votre calendrier. Chaque match peut être suivi en détail et des notifications sont envoyées aux membres.</p>
+    </section>
+
+    <!-- Filters -->
+    <section class="flex items-center gap-4 flex-wrap">
+      <button *ngFor="let type of eventTypes" 
+              (click)="selectedFilter = type"
+              [class.active]="selectedFilter === type"
+              class="px-6 py-2 rounded-full text-sm font-semibold transition"
+              [class.bg-red-600]="selectedFilter === type"
+              [class.bg-white/10]="selectedFilter !== type"
+              [class.hover:bg-white/20]="selectedFilter !== type">
+        {{ type === 'all' ? 'Tous' : type.toUpperCase() }}
+      </button>
+    </section>
+
+    <!-- Events Grid -->
+    <section class="grid md:grid-cols-3 gap-6">
+      <div *ngFor="let event of getFilteredEvents()" 
+           class="bg-gray-900/50 border border-white/10 rounded-lg overflow-hidden hover:border-red-600/50 transition">
+        <div class="h-40 bg-gradient-to-br from-red-600/20 to-black flex items-center justify-center flex-col gap-2">
+          <span class="text-white/50 text-sm">{{ event.type || 'Event' }}</span>
+          <span class="text-white font-bold">{{ formatDate(event.date) }}</span>
+        </div>
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-white">{{ event.title || 'Événement' }}</h3>
+            <span class="inline-block px-2 py-1 text-xs bg-red-600/20 text-red-400 rounded">{{ event.type }}</span>
+          </div>
+          <p class="text-gray-400 text-sm mb-3">{{ event.description }}</p>
+          <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+            <span>🕐 {{ formatTime(event.date) }}</span>
+            <span>📍 {{ event.location || 'Online' }}</span>
+          </div>
+          <button class="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+            Détails
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Info Section -->
+    <section class="border border-white/10 rounded-2xl p-6 bg-white/5 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-red-600 text-xs uppercase tracking-widest">Opérations</p>
+          <h2 class="text-2xl font-semibold">Flux support & admin</h2>
+        </div>
+        <span class="text-gray-400 text-sm">Admin dashboard sécurisé</span>
+      </div>
+      <p class="text-gray-400 text-sm">Chaque match est traçable côté admin : statut, journal d'audit et assignation des rôles de modération. Activez les notifications pour les membres.</p>
+      <ul class="grid md:grid-cols-2 gap-3 text-gray-400 text-sm">
+        <li>✓ Tags par type (tournoi, scrim, AMA) pour filtrer l'agenda.</li>
+        <li>✓ Notifications push/email pour les membres.</li>
+        <li>✓ Webhook vers Discord pour chaque événement clé.</li>
+        <li>✓ Accès au journal d'audit des opérations.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+

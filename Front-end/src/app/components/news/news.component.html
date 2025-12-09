@@ -1,1 +1,74 @@
-<h1>News</h1>
+<header class="sticky top-0 z-40 backdrop-blur bg-black/70 border-b border-white/10">
+  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="bg-primary px-3 py-2 rounded-md font-bold tracking-wide">KJX</div>
+      <nav class="hidden md:flex items-center space-x-6 text-sm uppercase tracking-wide text-white/80">
+        <a routerLink="/" class="hover:text-white">Accueil</a>
+        <a routerLink="/teams" class="hover:text-white">Rosters</a>
+        <a routerLink="/schedule" class="hover:text-white">Calendrier</a>
+        <a routerLink="/shop" class="hover:text-white">Boutique</a>
+        <a routerLink="/membership" class="hover:text-white">Membership</a>
+      </nav>
+    </div>
+    <a routerLink="/" class="px-4 py-2 rounded-full bg-primary hover:bg-red-700 transition font-semibold text-sm">Accueil</a>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-12 space-y-10">
+  <section class="space-y-4">
+    <p class="text-primary uppercase text-xs tracking-[0.3em]">Newsroom</p>
+    <h1 class="text-4xl font-bold">Communiqués, interviews, drops</h1>
+    <p class="text-white/70 max-w-3xl">Fil d'actualité fidèle à l'édito KJX.gg : annonces officielles, sorties boutique, contenus communauté. Les cartes sont alimentées par `/api/posts` ou votre instance Supabase.</p>
+  </section>
+
+  <section id="posts-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <article *ngFor="let post of posts" class="border border-white/10 rounded-lg overflow-hidden hover:border-primary/50 transition bg-white/5">
+      <div class="h-40 bg-gradient-to-br from-primary/20 to-black flex items-center justify-center">
+        <span class="text-white/50">{{ post.title }}</span>
+      </div>
+      <div class="p-4">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs text-white/60">{{ formatDate(post.date) }}</span>
+          <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded">{{ post.category || 'News' }}</span>
+        </div>
+        <h3 class="font-bold text-white mb-2">{{ post.title }}</h3>
+        <p class="text-white/60 text-sm line-clamp-3 mb-4">{{ post.excerpt || post.description }}</p>
+        <button class="text-primary hover:text-red-700 text-sm font-semibold">Lire la suite →</button>
+      </div>
+    </article>
+  </section>
+
+  <section class="border border-white/10 rounded-2xl p-6 bg-white/5 space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-primary text-xs uppercase tracking-[0.2em]">Modération</p>
+        <h2 class="text-2xl font-semibold">Support & audit</h2>
+      </div>
+      <span class="text-white/60 text-sm">Console admin sécurisée</span>
+    </div>
+    <p class="text-white/70 text-sm">Réactions, commentaires et publications sont traçables via le module d'audit et les tickets support. Activez la persistance Supabase pour conserver l'historique.</p>
+    <ul class="grid md:grid-cols-2 gap-3 text-white/70 text-sm">
+      <li>✓ Badges de visibilité (publié, brouillon, sponsorisé).</li>
+      <li>✓ Webhook vers Discord pour chaque publication clé.</li>
+    </ul>
+  </section>
+</main>
+    <section class="border border-white/10 rounded-2xl p-6 bg-white/5 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-red-600 text-xs uppercase tracking-widest">Modération</p>
+          <h2 class="text-2xl font-semibold">Support & audit</h2>
+        </div>
+        <span class="text-gray-400 text-sm">Console admin sécurisée</span>
+      </div>
+      <p class="text-gray-400 text-sm">Réactions, commentaires et publications sont traçables via le module d'audit et les tickets support. Tous les événements sont journalisés.</p>
+      <ul class="grid md:grid-cols-2 gap-3 text-gray-400 text-sm">
+        <li>✓ Badges de visibilité (publié, brouillon, sponsorisé).</li>
+        <li>✓ Webhook vers Discord pour les publications clés.</li>
+        <li>✓ Historique complet des modifications.</li>
+        <li>✓ Notifications en temps réel.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+

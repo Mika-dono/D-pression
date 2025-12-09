@@ -1,1 +1,99 @@
-<h1>Shop</h1>
+<div class="bg-black text-white">
+  <!-- Header -->
+  <header class="border-b border-white/10 bg-black/80">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-red-600 uppercase text-xs tracking-widest">Boutique</p>
+          <h1 class="text-3xl font-bold">Produits officiels KJX</h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <button (click)="showCart = !showCart" class="relative px-4 py-2 rounded-full border border-white/20 hover:border-red-600">
+            🛒 Panier ({{ getCartCount() }})
+          </button>
+          <a routerLink="/" class="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 transition font-semibold text-sm">Retour</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-12 space-y-10">
+    <!-- Filters -->
+    <section class="flex items-center gap-4 flex-wrap">
+      <button *ngFor="let cat of categories" 
+              (click)="applyFilter(cat)"
+              [class.active]="selectedFilter === cat"
+              class="px-6 py-2 rounded-full text-sm font-semibold transition"
+              [class.bg-red-600]="selectedFilter === cat"
+              [class.bg-white/10]="selectedFilter !== cat"
+              [class.hover:bg-white/20]="selectedFilter !== cat">
+        {{ cat === 'all' ? 'Tous' : cat.replace('-', ' ') | titlecase }}
+      </button>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let product of filteredProducts" 
+           class="bg-gray-900/50 border border-white/10 rounded-lg overflow-hidden hover:border-red-600/50 transition">
+        <div class="h-48 bg-gradient-to-br from-red-600/20 to-black flex items-center justify-center">
+          <span class="text-white/50">{{ product.name }}</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-bold text-white mb-2">{{ product.name }}</h3>
+          <p class="text-gray-400 text-sm mb-3">{{ product.description }}</p>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-red-600 font-bold text-lg">{{ product.price || '0' }} €</span>
+            <span class="text-xs bg-red-600/20 text-red-400 px-2 py-1 rounded">
+              Stock: {{ product.stock || 0 }}
+            </span>
+          </div>
+          <button (click)="addToCart(product)"
+                  [disabled]="(product.stock || 0) === 0"
+                  class="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ (product.stock || 0) === 0 ? 'Rupture' : 'Ajouter au panier' }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section *ngIf="showCart" class="border border-white/10 rounded-2xl p-6 bg-gray-900/50">
+      <h2 class="text-2xl font-bold mb-6">Panier ({{ getCartCount() }} articles)</h2>
+      <div *ngIf="cart.length === 0" class="text-center py-8 text-gray-400">
+        Votre panier est vide
+      </div>
+      <div *ngIf="cart.length > 0" class="space-y-4">
+        <div *ngFor="let item of cart" class="flex items-center justify-between p-4 bg-black/50 rounded">
+          <div class="flex-1">
+            <h4 class="font-bold">{{ item.name }}</h4>
+            <p class="text-gray-400 text-sm">{{ item.price }} € x {{ item.quantity }}</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <input type="number" [(ngModel)]="item.quantity" (ngModelChange)="updateQuantity(item.id, item.quantity)" 
+                   class="w-16 px-2 py-1 bg-gray-800 border border-white/20 rounded" min="1">
+            <span class="w-24 text-right font-bold">{{ (item.price * item.quantity) | number:'1.2-2' }} €</span>
+            <button (click)="removeFromCart(item.id)" class="text-red-600 hover:text-red-700">×</button>
+          </div>
+        </div>
+        <div class="border-t border-white/10 pt-4 flex items-center justify-between">
+          <span class="text-lg font-bold">Total: {{ getCartTotal() | number:'1.2-2' }} €</span>
+          <button class="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-full transition font-semibold">
+            Procéder au paiement
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Info Section -->
+    <section class="border border-white/10 rounded-2xl p-8 bg-gradient-to-br from-red-600/10 to-black/50">
+      <h2 class="text-2xl font-bold mb-4">À propos de la boutique</h2>
+      <ul class="grid md:grid-cols-2 gap-3 text-gray-400 text-sm">
+        <li>✓ Livraison offerte à partir de 50 €</li>
+        <li>✓ Retours gratuits sous 30 jours</li>
+        <li>✓ Paiement sécurisé (Stripe, PayPal)</li>
+        <li>✓ Réductions members jusqu'à 20%</li>
+      </ul>
+    </section>
+  </main>
+</div>
+

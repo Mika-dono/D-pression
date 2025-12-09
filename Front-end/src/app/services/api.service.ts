@@ -35,9 +35,9 @@ export class ApiService {
     return this.http.get<any[]>(`${this.apiUrl}/posts`);
   }
 
-  // Admin - Login
+  // Admin - Login (deprecated - use AuthService instead)
   adminLogin(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/admin/login`, credentials);
+    return this.http.post(`http://localhost:8080/auth/login`, credentials);
   }
 
   // Admin - Get Scrim Requests

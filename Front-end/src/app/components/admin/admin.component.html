@@ -1,289 +1,355 @@
-<!-- Écran de connexion -->
+<!-- Login Screen -->
 <div *ngIf="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-black">
   <div class="bg-[#1A1A1A] border border-gray-700 rounded-lg p-8 w-full max-w-md shadow-lg">
-    <h1 class="text-3xl font-bold text-white mb-2">Console Admin</h1>
-    <p class="text-gray-400 text-sm mb-6">Gestion KJX</p>
-    
-    <form (ngSubmit)="login()" class="space-y-4" #loginForm="ngForm">
-      <div>
-        <label class="block text-white text-sm font-semibold mb-2">Identifiant</label>
-        <input type="text" [(ngModel)]="credentials.username" name="username" 
-               class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded text-white focus:border-red-600 focus:outline-none" 
-               placeholder="admin@kjx.gg" required>
-      </div>
-      <div>
-        <label class="block text-white text-sm font-semibold mb-2">Mot de passe</label>
-        <input type="password" [(ngModel)]="credentials.password" name="password" 
-               class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded text-white focus:border-red-600 focus:outline-none" 
-               placeholder="••••••" required>
-      </div>
-      <button type="submit" class="w-full px-4 py-3 bg-red-600 text-white rounded font-semibold hover:bg-red-700 transition">
-        Connexion
-      </button>
-    </form>
-    
-    <div class="mt-6 p-4 bg-gray-900 rounded text-xs text-gray-400 space-y-1">
-      <p><strong>Identifiant:</strong> admin</p>
-      <p><strong>Mot de passe:</strong> admin123</p>
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-bold"><span class="text-[#E2012D]">KJX</span> Panel Admin</h1>
+      <p class="text-gray-400 text-sm">Accès réservé à l'administration</p>
     </div>
+    <form (ngSubmit)="login()" class="space-y-4">
+      <div>
+        <label class="block mb-1">Nom</label>
+        <input 
+          [(ngModel)]="credentials.username" 
+          name="username"
+          type="text" 
+          placeholder="Admin" 
+          class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-[#E2012D]">
+      </div>
+      <div>
+        <label class="block mb-1">Mot de passe</label>
+        <input 
+          [(ngModel)]="credentials.password" 
+          name="password"
+          type="password" 
+          placeholder="••••••••" 
+          class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-[#E2012D]">
+      </div>
+      <button type="submit" class="w-full py-2 rounded bg-[#E2012D] hover:bg-red-700 transition font-semibold">Connexion</button>
+    </form>
+    <p class="text-gray-400 text-xs mt-4 text-center">Credentials: admin / admin123</p>
   </div>
 </div>
 
-<!-- Panel Admin -->
-<div *ngIf="isLoggedIn" class="admin-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="p-4 border-b border-white/10 sticky top-0 bg-[#0f0f11] z-10">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-white font-bold text-lg">KJX</h2>
-            <p class="text-gray-400 text-xs">Console Admin</p>
-          </div>
-          <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
-            {{ adminName.charAt(0).toUpperCase() }}
-          </div>
-        </div>
+<!-- Admin Content -->
+<div *ngIf="isLoggedIn" class="min-h-screen bg-[#0F0F11]">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 backdrop-blur bg-black/70 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-[#E2012D] px-3 py-2 rounded-md font-bold tracking-wide">KJX Admin</div>
+        <div class="text-gray-400 text-sm">Bienvenue, <span class="text-white font-semibold">{{ adminName }}</span></div>
       </div>
+      <button 
+        (click)="logout()"
+        class="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 transition text-sm">
+        Déconnexion
+      </button>
+    </div>
+  </header>
 
-      <nav class="space-y-2 p-4">
-        <button (click)="switchSection('dashboard')" 
-                [class.active]="activeSection === 'dashboard'"
-                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
-                [ngClass]="activeSection === 'dashboard' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
-          📊 Dashboard
-        </button>
-        <button (click)="switchSection('scrims')" 
-                [class.active]="activeSection === 'scrims'"
-                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
-                [ngClass]="activeSection === 'scrims' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
-          🎮 Scrims
-        </button>
-        <button (click)="switchSection('schedule')" 
-                [class.active]="activeSection === 'schedule'"
-                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
-                [ngClass]="activeSection === 'schedule' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
-          📅 Planning
-        </button>
-        <button (click)="switchSection('events')" 
-                [class.active]="activeSection === 'events'"
-                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
-                [ngClass]="activeSection === 'events' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
-          🎪 Events
-        </button>
-        <button (click)="switchSection('matches')" 
-                [class.active]="activeSection === 'matches'"
-                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
-                [ngClass]="activeSection === 'matches' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
-          ⚡ Matches
-        </button>
-        <button (click)="switchSection('objectives')" 
-                [class.active]="activeSection === 'objectives'"
-                class="nav-item w-full text-left px-4 py-3 rounded transition text-sm font-medium"
-                [ngClass]="activeSection === 'objectives' ? 'bg-red-600 text-white' : 'text-gray-300 hover:bg-gray-800'">
-          🎯 Objectifs
-        </button>
-      </nav>
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Navigation -->
+    <div class="flex gap-2 mb-6 flex-wrap">
+      <button 
+        *ngFor="let section of ['weekly', 'events', 'matches', 'scrims', 'objectives']"
+        (click)="switchSection(section)"
+        [class.ring-2]="activeSection === section"
+        class="px-4 py-2 rounded text-sm uppercase font-semibold"
+        [ngClass]="activeSection === section ? 'bg-[#E2012D]' : 'bg-gray-800 hover:bg-gray-700'">
+        {{ section === 'weekly' ? 'Planning' : section === 'objectives' ? 'Objectifs' : section | titlecase }}
+      </button>
+    </div>
 
-      <div class="absolute bottom-4 left-4 right-4 space-y-2">
-        <div class="text-xs text-gray-500 px-2">Bienvenue, {{ adminName }}</div>
-        <button (click)="logout()" class="w-full px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition text-sm font-medium">
-          🚪 Déconnexion
-        </button>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <section class="main-content">
-      <header class="sticky top-0 bg-black/80 border-b border-white/10 p-6 z-10">
-        <div class="flex items-center justify-between">
-          <h1 class="text-3xl font-bold text-white" id="section-title">Dashboard</h1>
-          <span class="text-gray-400 text-sm">Console de gestion</span>
-        </div>
-      </header>
-
-      <!-- Dashboard Section -->
-      <div *ngIf="activeSection === 'dashboard'" class="admin-panel">
-        <div class="space-y-6">
-          <!-- KPIs -->
-          <div class="grid md:grid-cols-4 gap-4">
-            <div class="bg-gray-900 border border-gray-700 rounded p-6 text-center">
-              <div class="text-red-600 text-3xl font-bold">{{ getPendingCount() }}</div>
-              <div class="text-gray-400 text-xs mt-2">EN ATTENTE</div>
-            </div>
-            <div class="bg-gray-900 border border-gray-700 rounded p-6 text-center">
-              <div class="text-green-500 text-3xl font-bold">{{ getApprovedCount() }}</div>
-              <div class="text-gray-400 text-xs mt-2">APPROUVÉS</div>
-            </div>
-            <div class="bg-gray-900 border border-gray-700 rounded p-6 text-center">
-              <div class="text-yellow-500 text-3xl font-bold">{{ getRejectedCount() }}</div>
-              <div class="text-gray-400 text-xs mt-2">REFUSÉS</div>
-            </div>
-            <div class="bg-gray-900 border border-gray-700 rounded p-6 text-center">
-              <div class="text-blue-500 text-3xl font-bold">{{ scrimRequests.length }}</div>
-              <div class="text-gray-400 text-xs mt-2">TOTAL SCRIMS</div>
-            </div>
-          </div>
-
-          <!-- Derniers Scrims -->
-          <div class="border border-gray-700 rounded-lg p-6 bg-gray-900/50">
-            <h2 class="text-lg font-bold text-white mb-4">📋 Demandes Récentes</h2>
-            <div class="space-y-3 max-h-96 overflow-y-auto">
-              <div *ngFor="let scrim of scrimRequests.slice(0, 5)" class="border border-gray-700 rounded p-4 bg-gray-800/50 flex items-center justify-between">
-                <div>
-                  <p class="text-white font-medium">{{ scrim.team }}</p>
-                  <p class="text-gray-400 text-xs">{{ scrim.date }}</p>
-                </div>
-                <span [ngClass]="'px-3 py-1 rounded text-xs font-bold ' + getBadgeClass(scrim.status)" class="text-white">
-                  {{ scrim.status.toUpperCase() }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scrims Section -->
-      <div *ngIf="activeSection === 'scrims'" class="admin-panel">
-        <h2 class="text-2xl font-bold text-white mb-6">Gestion des Scrims</h2>
-        
-        <div class="space-y-4 max-h-96 overflow-y-auto">
-          <div *ngFor="let scrim of scrimRequests; let i = index" class="border border-gray-700 rounded-lg p-6 bg-gray-900/50 space-y-3">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-white font-bold">{{ scrim.team }}</h3>
-                <p class="text-gray-400 text-xs">{{ scrim.date }}</p>
-              </div>
-              <span [ngClass]="'px-3 py-1 rounded text-xs font-bold ' + getBadgeClass(scrim.status)" class="text-white">
-                {{ scrim.status.toUpperCase() }}
-              </span>
-            </div>
-            
-            <div class="grid grid-cols-3 gap-3 text-sm">
-              <button (click)="updateScrimStatus(scrim.id, 'pending')" 
-                      class="px-3 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-xs font-semibold">
-                Attente
-              </button>
-              <button (click)="updateScrimStatus(scrim.id, 'approved')" 
-                      class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-semibold">
-                Approuver
-              </button>
-              <button (click)="updateScrimStatus(scrim.id, 'rejected')" 
-                      class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-semibold">
-                Refuser
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Schedule Section -->
-      <div *ngIf="activeSection === 'schedule'" class="admin-panel">
-        <h2 class="text-2xl font-bold text-white mb-6">Planning</h2>
-        
-        <form (ngSubmit)="saveSchedule()" class="space-y-4">
-          <div>
-            <label class="block text-white text-sm font-semibold mb-2">Sélectionner le jour</label>
-            <select [(ngModel)]="selectedDay" name="day" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
-              <option>LUNDI</option>
-              <option>MARDI</option>
-              <option>MERCREDI</option>
-              <option>JEUDI</option>
-              <option>VENDREDI</option>
-              <option>SAMEDI</option>
-              <option>DIMANCHE</option>
-            </select>
-          </div>
-
-          <div class="grid md:grid-cols-3 gap-4">
+    <!-- PLANNING SECTION -->
+    <div *ngIf="activeSection === 'weekly'" class="space-y-6">
+      <h2 class="text-2xl font-bold">Planning Hebdomadaire</h2>
+      
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Form -->
+        <div class="bg-[#1A1A1A] border border-gray-700 rounded-lg p-6">
+          <h3 class="font-bold mb-4">Ajouter une session</h3>
+          <form (ngSubmit)="saveScheduleForm()" class="space-y-4">
             <div>
-              <label class="block text-white text-sm font-semibold mb-2">Heure début</label>
-              <input type="time" [(ngModel)]="schedule[selectedDay]" name="start" 
-                     class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
-            </div>
-            <div>
-              <label class="block text-white text-sm font-semibold mb-2">Heure fin</label>
-              <input type="time" name="end" 
-                     class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
-            </div>
-            <div>
-              <label class="block text-white text-sm font-semibold mb-2">Type</label>
-              <select name="type" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
-                <option>Match</option>
-                <option>Scrim</option>
-                <option>Entraînement</option>
+              <label class="block mb-1 text-sm">Jour</label>
+              <select 
+                [(ngModel)]="dayForm.day" 
+                name="day"
+                class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+                <option *ngFor="let day of days" [value]="day">{{ day }}</option>
               </select>
             </div>
+            <div>
+              <label class="block mb-1 text-sm">Heure de début</label>
+              <input 
+                [(ngModel)]="dayForm.start" 
+                name="start"
+                type="time" 
+                class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            </div>
+            <div>
+              <label class="block mb-1 text-sm">Heure de fin</label>
+              <input 
+                [(ngModel)]="dayForm.end" 
+                name="end"
+                type="time" 
+                class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            </div>
+            <div>
+              <label class="block mb-1 text-sm">Description</label>
+              <input 
+                [(ngModel)]="dayForm.description" 
+                name="description"
+                type="text" 
+                class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            </div>
+            <button type="submit" class="w-full py-2 rounded bg-[#E2012D] hover:bg-red-700 transition font-semibold">Enregistrer</button>
+          </form>
+        </div>
+
+        <!-- Schedule Grid -->
+        <div class="space-y-3">
+          <h3 class="font-bold">Semaine</h3>
+          <div class="grid gap-2">
+            <div 
+              *ngFor="let day of days"
+              (click)="fillDay(day)"
+              class="p-3 rounded border border-gray-700 bg-[#1A1A1A] cursor-pointer hover:border-[#E2012D] transition">
+              <div class="flex justify-between items-center">
+                <h4 class="font-bold text-[#E2012D] text-sm">{{ day }}</h4>
+              </div>
+              <p class="text-xs text-gray-300">{{ schedule[day]?.start || '21:00' }} - {{ schedule[day]?.end || '00:00' }}</p>
+              <p class="text-xs text-gray-500">{{ schedule[day]?.description || "Session d'entraînement" }}</p>
+            </div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <button type="submit" class="w-full px-4 py-3 bg-red-600 text-white rounded font-semibold hover:bg-red-700 transition">
-            Mettre à jour le planning
-          </button>
+    <!-- OBJECTIVES SECTION -->
+    <div *ngIf="activeSection === 'objectives'" class="space-y-6">
+      <h2 class="text-2xl font-bold">Objectifs Hebdomadaires</h2>
+      <div class="bg-[#1A1A1A] border border-gray-700 rounded-lg p-6">
+        <form (ngSubmit)="saveObjectives()">
+          <textarea 
+            [(ngModel)]="weeklyObjectives" 
+            name="objectives"
+            class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white h-40 resize-none"
+            placeholder="Entrez vos objectifs..."></textarea>
+          <button type="submit" class="mt-4 px-4 py-2 rounded bg-[#E2012D] hover:bg-red-700 transition font-semibold">Enregistrer les objectifs</button>
         </form>
+      </div>
+    </div>
 
-        <div class="mt-6 p-4 bg-gray-900 border border-gray-700 rounded">
-          <p class="text-gray-400 text-sm">Planning pour {{ selectedDay }}: <strong class="text-white">{{ schedule[selectedDay] || 'Non défini' }}</strong></p>
+    <!-- EVENTS SECTION -->
+    <div *ngIf="activeSection === 'events'" class="space-y-6">
+      <h2 class="text-2xl font-bold">Gestion des Événements</h2>
+      
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Add Event Form -->
+        <div class="bg-[#1A1A1A] border border-gray-700 rounded-lg p-6">
+          <h3 class="font-bold mb-4">Ajouter un événement</h3>
+          <form (ngSubmit)="addEvent()" class="space-y-4">
+            <input 
+              [(ngModel)]="eventForm.title" 
+              name="title"
+              type="text" 
+              placeholder="Titre"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            <select 
+              [(ngModel)]="eventForm.type" 
+              name="type"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+              <option value="tournament">Tournoi</option>
+              <option value="scrim">Scrim</option>
+              <option value="training">Entraînement</option>
+              <option value="meeting">Réunion</option>
+            </select>
+            <input 
+              [(ngModel)]="eventForm.date" 
+              name="date"
+              type="date"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            <input 
+              [(ngModel)]="eventForm.time" 
+              name="time"
+              type="time"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            <textarea 
+              [(ngModel)]="eventForm.desc" 
+              name="desc"
+              placeholder="Description"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white h-20 resize-none"></textarea>
+            <button type="submit" class="w-full py-2 rounded bg-[#E2012D] hover:bg-red-700 transition font-semibold">Ajouter</button>
+          </form>
+        </div>
+
+        <!-- Events List -->
+        <div class="space-y-3">
+          <h3 class="font-bold">Événements</h3>
+          <div *ngIf="getSortedEvents().length === 0" class="text-gray-400 text-sm">Aucun événement.</div>
+          <div 
+            *ngFor="let event of getSortedEvents()"
+            class="p-4 rounded border border-gray-700 bg-[#1A1A1A]">
+            <div class="flex justify-between items-start mb-2">
+              <div class="flex items-center gap-2">
+                <h4 class="font-bold">{{ event.title }}</h4>
+                <span class="px-2 py-1 text-xs rounded bg-[#E2012D]">{{ labelEvent(event.type) }}</span>
+              </div>
+              <button 
+                (click)="deleteEvent(event.id)"
+                type="button"
+                class="text-red-400 hover:text-red-200">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <p class="text-gray-300 text-sm">{{ formatDate(event.date) }} à {{ event.time || '--:--' }}</p>
+            <p *ngIf="event.desc" class="text-gray-400 text-sm mt-1">{{ event.desc }}</p>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Events Section -->
-      <div *ngIf="activeSection === 'events'" class="admin-panel">
-        <h2 class="text-2xl font-bold text-white mb-6">Événements</h2>
-        <div class="bg-gray-900 border border-yellow-500/30 rounded p-6 text-center">
-          <p class="text-yellow-500 text-sm">⚠️ En développement</p>
-          <p class="text-gray-400 text-xs mt-2">Gestion complète des événements à venir</p>
+    <!-- MATCHES SECTION -->
+    <div *ngIf="activeSection === 'matches'" class="space-y-6">
+      <h2 class="text-2xl font-bold">Gestion des Matchs</h2>
+      
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Add Match Form -->
+        <div class="bg-[#1A1A1A] border border-gray-700 rounded-lg p-6">
+          <h3 class="font-bold mb-4">Ajouter un match</h3>
+          <form (ngSubmit)="addMatch()" class="space-y-4">
+            <input 
+              [(ngModel)]="matchForm.tournament" 
+              name="tournament"
+              type="text" 
+              placeholder="Tournoi"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            <select 
+              [(ngModel)]="matchForm.format" 
+              name="format"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+              <option value="Bo1">Bo1</option>
+              <option value="Bo3">Bo3</option>
+              <option value="Bo5">Bo5</option>
+            </select>
+            <input 
+              [(ngModel)]="matchForm.team1" 
+              name="team1"
+              type="text" 
+              placeholder="Équipe 1"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            <input 
+              [(ngModel)]="matchForm.team2" 
+              name="team2"
+              type="text" 
+              placeholder="Équipe 2"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            <input 
+              [(ngModel)]="matchForm.date" 
+              name="date"
+              type="date"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            <input 
+              [(ngModel)]="matchForm.time" 
+              name="time"
+              type="time"
+              class="w-full px-3 py-2 bg-[#0F0F11] border border-gray-700 rounded text-white">
+            <button type="submit" class="w-full py-2 rounded bg-[#E2012D] hover:bg-red-700 transition font-semibold">Ajouter</button>
+          </form>
+        </div>
+
+        <!-- Matches List -->
+        <div class="space-y-3">
+          <h3 class="font-bold">Matchs</h3>
+          <div *ngIf="getSortedMatches().length === 0" class="text-gray-400 text-sm">Aucun match.</div>
+          <div 
+            *ngFor="let match of getSortedMatches()"
+            class="p-4 rounded border border-gray-700 bg-[#1A1A1A]">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <h4 class="font-bold">{{ match.tournament }}</h4>
+                <p class="text-gray-400 text-sm">{{ match.format }}</p>
+              </div>
+              <div class="flex gap-2">
+                <button 
+                  (click)="toggleMatch(match.id)"
+                  type="button"
+                  class="text-blue-400 hover:text-blue-200"
+                  [title]="match.hidden ? 'Afficher' : 'Masquer'">
+                  <i [class]="match.hidden ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+                </button>
+                <button 
+                  (click)="deleteMatch(match.id)"
+                  type="button"
+                  class="text-red-400 hover:text-red-200">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex-1 text-center font-semibold">{{ match.team1 }}</div>
+              <div class="mx-4 font-bold">VS</div>
+              <div class="flex-1 text-center font-semibold">{{ match.team2 }}</div>
+            </div>
+            <p class="text-center text-gray-300 text-sm">{{ formatDate(match.date) }} à {{ match.time || '--:--' }}</p>
+            <p *ngIf="match.hidden" class="text-center text-yellow-400 text-xs mt-2">Masqué côté public</p>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Matches Section -->
-      <div *ngIf="activeSection === 'matches'" class="admin-panel">
-        <h2 class="text-2xl font-bold text-white mb-6">Matches</h2>
-        <div class="bg-gray-900 border border-yellow-500/30 rounded p-6 text-center">
-          <p class="text-yellow-500 text-sm">⚠️ En développement</p>
-          <p class="text-gray-400 text-xs mt-2">Suivi des matchs en temps réel</p>
-        </div>
+    <!-- SCRIMS SECTION -->
+    <div *ngIf="activeSection === 'scrims'" class="space-y-6">
+      <h2 class="text-2xl font-bold">Demandes Scrims</h2>
+      
+      <!-- Filters -->
+      <div class="flex gap-2">
+        <button 
+          *ngFor="let filter of ['all', 'pending', 'accepted', 'rejected']"
+          (click)="selectedFilter = filter"
+          [class.ring-2]="selectedFilter === filter"
+          class="px-4 py-2 rounded text-sm"
+          [ngClass]="selectedFilter === filter ? 'bg-[#E2012D]' : 'bg-gray-800 hover:bg-gray-700'">
+          {{ filter === 'all' ? 'Tous' : filter === 'pending' ? 'En attente' : filter === 'accepted' ? 'Acceptées' : 'Refusées' }}
+        </button>
       </div>
 
-      <!-- Objectives Section -->
-      <div *ngIf="activeSection === 'objectives'" class="admin-panel">
-        <h2 class="text-2xl font-bold text-white mb-6">Objectifs</h2>
-        <div class="bg-gray-900 border border-yellow-500/30 rounded p-6 text-center">
-          <p class="text-yellow-500 text-sm">⚠️ En développement</p>
-          <p class="text-gray-400 text-xs mt-2">Gestion des objectifs équipe</p>
+      <!-- Scrims List -->
+      <div class="grid gap-4">
+        <div *ngIf="getFilteredScrims().length === 0" class="text-gray-400 text-sm">Aucune demande pour ce filtre.</div>
+        <div 
+          *ngFor="let req of getFilteredScrims()"
+          class="p-4 rounded border border-gray-700 bg-[#1A1A1A]">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h4 class="font-bold">{{ req.teamName }}</h4>
+              <p class="text-gray-400 text-sm">{{ req.teamEmail }}</p>
+            </div>
+            <span 
+              class="text-xs px-2 py-1 rounded"
+              [ngClass]="badgeClass(req.status)">
+              {{ labelStatus(req.status) }}
+            </span>
+          </div>
+          <p class="text-sm"><strong>Niveau:</strong> {{ req.level || 'N/C' }}</p>
+          <p class="text-sm"><strong>Disponibilités:</strong> {{ req.preferredDates || 'Non renseigné' }}</p>
+          <p *ngIf="req.details" class="text-gray-400 text-sm mt-2">{{ req.details }}</p>
+          <div class="flex gap-2 mt-4">
+            <button 
+              (click)="updateScrim(req.id, 'accepted')"
+              [disabled]="req.status !== 'pending'"
+              class="px-4 py-2 rounded bg-green-600 hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold">
+              Accepter
+            </button>
+            <button 
+              (click)="updateScrim(req.id, 'rejected')"
+              [disabled]="req.status !== 'pending'"
+              class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold">
+              Refuser
+            </button>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
 </div>
-
-<style>
-  .admin-container {
-    display: flex;
-    min-height: 100vh;
-  }
-  
-  .sidebar {
-    width: 280px;
-    background: #1a1a1a;
-    border-right: 1px solid #333;
-    position: relative;
-  }
-  
-  .main-content {
-    flex: 1;
-    background: #0f0f11;
-    overflow-y: auto;
-  }
-  
-  .nav-item {
-    transition: all 0.3s ease;
-    border-left: 3px solid transparent;
-  }
-  
-  .nav-item.active {
-    border-left-color: #e60012;
-  }
-  
-  .admin-panel {
-    padding: 2rem;
-    background: rgba(0, 0, 0, 0.5);
-  }
-</style>

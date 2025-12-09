@@ -1,36 +1,96 @@
-.admin-container {
-  display: flex;
-  width: 100%;
+:root {
+  --kjx-red: #E2012D;
+  --kjx-black: #000000;
+  --kjx-white: #FFFFFF;
+  --kjx-gray: #1A1A1A;
+  --kjx-light-gray: #2A2A2A;
 }
 
-.admin-panel-container {
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--kjx-black);
+  color: var(--kjx-white);
+}
+
+.admin-container {
   display: flex;
-  width: 100%;
   min-height: 100vh;
 }
 
 .sidebar {
   width: 280px;
-  background: #1a1a1a;
+  background: var(--kjx-gray);
   border-right: 1px solid #333;
-  overflow-y: auto;
-  position: relative;
 }
 
 .main-content {
   flex: 1;
-  background: #0f0f11;
+  background: var(--kjx-black);
   overflow-y: auto;
 }
 
 .nav-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   border-left: 3px solid transparent;
 }
 
-.nav-item.active {
-  border-left-color: #e60012;
+.nav-item:hover {
+  background: var(--kjx-light-gray);
 }
 
-.nav-item:hover {
-  background-color: #2a2a2a;
+.nav-item.active {
+  background: var(--kjx-light-gray);
+  border-left-color: var(--kjx-red);
+}
+
+.section-content {
+  display: none;
+}
+
+.section-content.active {
+  display: block;
+}
+
+.admin-panel {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid var(--kjx-red);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 15px;
+  background: var(--kjx-light-gray);
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: var(--kjx-white);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--kjx-red);
+}
+
+.btn-primary {
+  background: var(--kjx-red);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #ff1a4d;
+}
+
+.btn-primary:disabled {
+  background: #666;
+  cursor: not-allowed;
 }

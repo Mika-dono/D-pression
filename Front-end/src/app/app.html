@@ -1,11 +1,11 @@
 <nav>
-  <a routerLink="/home">Home</a>
-  <a routerLink="/membership">Membership</a>
-  <a routerLink="/news">News</a>
-  <a routerLink="/schedule">Schedule</a>
-  <a routerLink="/shop">Shop</a>
-  <a routerLink="/teams">Teams</a>
-  <a routerLink="/admin">Admin</a>
+  <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+  <a routerLink="/membership" routerLinkActive="active">Membership</a>
+  <a routerLink="/news" routerLinkActive="active">News</a>
+  <a routerLink="/schedule" routerLinkActive="active">Schedule</a>
+  <a routerLink="/shop" routerLinkActive="active">Shop</a>
+  <a routerLink="/teams" routerLinkActive="active">Teams</a>
+  <a routerLink="/admin" routerLinkActive="active">Admin</a>
 </nav>
 
 <hr />

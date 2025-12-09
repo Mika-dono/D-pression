@@ -57,14 +57,17 @@
 			<scope>runtime</scope>
 		</dependency>
 		
+		<!-- H2 Database (for testing when SQL Server not available) -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		
 		<!-- Flyway for Database Migrations -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-sqlserver</artifactId>
 		</dependency>
 		
 		<!-- Lombok for reducing boilerplate -->

@@ -10,16 +10,16 @@ interface ScheduleData {
 }
 
 interface Event {
-  id: string | number;
+  id?: number;
   title: string;
   type: string;
   date: string;
   time: string;
-  desc: string;
+  description?: string;
 }
 
 interface Match {
-  id: string | number;
+  id?: number;
   tournament: string;
   format: string;
   team1: string;
@@ -30,13 +30,13 @@ interface Match {
 }
 
 interface ScrimRequest {
-  id: string | number;
-  teamName: string;
-  teamEmail: string;
-  status: 'pending' | 'accepted' | 'rejected';
-  level: string;
-  preferredDates: string;
-  details: string;
+  id?: number;
+  opponent: string;
+  description?: string;
+  date: string;
+  status: string;
+  game?: string;
+  notes?: string;
 }
 
 interface DashboardStats {
@@ -195,14 +195,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.loadEvents();
     this.loadMatches();
     this.loadScrimRequests();
-    this.updateDashboardStats();
   }
 
   updateDashboardStats(): void {
     this.dashboardStats = {
       totalEvents: this.events.length,
       totalMatches: this.matches.length,
-      pendingScrims: this.scrimRequests.filter(s => s.status === 'pending').length,
+      pendingScrims: this.scrimRequests.filter(s => s.status === 'PENDING').length,
       weeklyTraining: Object.keys(this.schedule).length
     };
     
@@ -215,23 +214,60 @@ export class AdminComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // =============== SCHEDULE ===============
+  // =============== SCHEDULE (API) ===============
   loadSchedule(): void {
-    this.schedule = this.getSchedule();
-    this.dayForm.day = this.selectedDay;
-    this.fillDay(this.selectedDay);
+    this.apiService.getSchedules().subscribe({
+      next: (data) => {
+        this.schedule = {};
+        data.forEach((s: any) => {
+          this.schedule[s.dayOfWeek] = {
+            start: s.startTime || '21:00',
+            end: s.endTime || '00:00',
+            description: s.activity || "Session d'entraînement"
+          };
+        });
+        this.fillDay(this.selectedDay);
+        this.updateDashboardStats();
+      },
+      error: () => {
+        // Fallback to localStorage if API fails
+        this.schedule = this.getScheduleFromLocalStorage();
+        this.fillDay(this.selectedDay);
+        this.updateDashboardStats();
+      }
+    });
   }
 
   saveScheduleForm(): void {
-    this.schedule[this.dayForm.day] = {
-      start: this.dayForm.start,
-      end: this.dayForm.end,
-      description: this.dayForm.description
+    const scheduleData = {
+      dayOfWeek: this.dayForm.day,
+      startTime: this.dayForm.start,
+      endTime: this.dayForm.end,
+      activity: this.dayForm.description
     };
-    this.saveSchedule(this.schedule);
-    this.loadSchedule();
-    this.updateDashboardStats();
-    this.showToast('Planning mis à jour', 'success');
+    
+    this.apiService.saveScheduleByDay(scheduleData).subscribe({
+      next: () => {
+        this.schedule[this.dayForm.day] = {
+          start: this.dayForm.start,
+          end: this.dayForm.end,
+          description: this.dayForm.description
+        };
+        this.updateDashboardStats();
+        this.showToast('Planning mis à jour (DB)', 'success');
+      },
+      error: () => {
+        // Fallback to localStorage
+        this.schedule[this.dayForm.day] = {
+          start: this.dayForm.start,
+          end: this.dayForm.end,
+          description: this.dayForm.description
+        };
+        this.saveScheduleToLocalStorage(this.schedule);
+        this.updateDashboardStats();
+        this.showToast('Planning mis à jour (local)', 'warning');
+      }
+    });
   }
 
   fillDay(day: string): void {
@@ -243,7 +279,8 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.selectedDay = day;
   }
 
-  getSchedule(): ScheduleData {
+  // LocalStorage fallback methods for schedule
+  getScheduleFromLocalStorage(): ScheduleData {
     try {
       const raw = localStorage.getItem('cgk_weekly_schedule');
       const parsed = raw ? JSON.parse(raw) : {};
@@ -253,15 +290,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
     }
   }
 
-  saveSchedule(schedule: ScheduleData): void {
+  saveScheduleToLocalStorage(schedule: ScheduleData): void {
     try {
       localStorage.setItem('cgk_weekly_schedule', JSON.stringify(schedule));
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }
 
-  // =============== OBJECTIVES ===============
+  // =============== OBJECTIVES (localStorage) ===============
   loadObjectives(): void {
     this.weeklyObjectives = localStorage.getItem('cgk_weekly_objectives') || '';
   }
@@ -269,15 +304,29 @@ export class AdminComponent implements OnInit, AfterViewInit {
   saveObjectives(): void {
     try {
       localStorage.setItem('cgk_weekly_objectives', this.weeklyObjectives);
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
     this.showToast('Objectifs enregistrés', 'success');
   }
 
-  // =============== EVENTS ===============
+  // =============== EVENTS (API) ===============
   loadEvents(): void {
-    this.events = this.getEvents();
+    this.apiService.getEvents().subscribe({
+      next: (data) => {
+        this.events = data.map((e: any) => ({
+          id: e.id,
+          title: e.title,
+          type: e.type || 'tournament',
+          date: e.date ? e.date.split('T')[0] : '',
+          time: e.time || (e.date ? e.date.split('T')[1]?.substring(0, 5) : ''),
+          description: e.description
+        }));
+        this.updateDashboardStats();
+      },
+      error: () => {
+        this.events = [];
+        this.updateDashboardStats();
+      }
+    });
   }
 
   addEvent(): void {
@@ -285,44 +334,49 @@ export class AdminComponent implements OnInit, AfterViewInit {
       this.showToast('Veuillez remplir tous les champs requis', 'error');
       return;
     }
-    const newEvent: Event = {
-      id: this.generateId(),
+    
+    const eventData = {
       title: this.eventForm.title,
       type: this.eventForm.type || 'tournament',
-      date: this.eventForm.date,
+      date: `${this.eventForm.date}T${this.eventForm.time || '00:00'}:00`,
       time: this.eventForm.time,
-      desc: this.eventForm.desc || ''
+      description: this.eventForm.desc || ''
     };
-    this.events.push(newEvent);
-    this.saveEvents(this.events);
-    this.eventForm = { title: '', type: 'tournament', date: '', time: '', desc: '' };
-    this.updateDashboardStats();
-    this.showToast('Événement créé avec succès', 'success');
+    
+    this.apiService.createEvent(eventData).subscribe({
+      next: (created) => {
+        this.events.push({
+          id: created.id,
+          title: created.title,
+          type: created.type,
+          date: this.eventForm.date,
+          time: this.eventForm.time,
+          description: created.description
+        });
+        this.eventForm = { title: '', type: 'tournament', date: '', time: '', desc: '' };
+        this.updateDashboardStats();
+        this.showToast('Événement créé dans la DB ✅', 'success');
+      },
+      error: (err) => {
+        console.error('Error creating event:', err);
+        this.showToast('Erreur lors de la création', 'error');
+      }
+    });
   }
 
-  deleteEvent(id: string | number): void {
-    this.events = this.events.filter(ev => `${ev.id}` !== `${id}`);
-    this.saveEvents(this.events);
-    this.updateDashboardStats();
-    this.showToast('Événement supprimé', 'warning');
-  }
-
-  getEvents(): Event[] {
-    try {
-      const raw = localStorage.getItem('cgk_events');
-      const parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  }
-
-  saveEvents(events: Event[]): void {
-    try {
-      localStorage.setItem('cgk_events', JSON.stringify(events));
-    } catch {
-      /* ignore */
-    }
+  deleteEvent(id: number | undefined): void {
+    if (!id) return;
+    
+    this.apiService.deleteEvent(id).subscribe({
+      next: () => {
+        this.events = this.events.filter(ev => ev.id !== id);
+        this.updateDashboardStats();
+        this.showToast('Événement supprimé de la DB', 'warning');
+      },
+      error: () => {
+        this.showToast('Erreur lors de la suppression', 'error');
+      }
+    });
   }
 
   labelEvent(type: string): string {
@@ -345,9 +399,27 @@ export class AdminComponent implements OnInit, AfterViewInit {
     return icons[type] || '📅';
   }
 
-  // =============== MATCHES ===============
+  // =============== MATCHES (API) ===============
   loadMatches(): void {
-    this.matches = this.getMatches();
+    this.apiService.getMatches().subscribe({
+      next: (data) => {
+        this.matches = data.map((m: any) => ({
+          id: m.id,
+          tournament: m.tournament,
+          format: m.format || 'Bo1',
+          team1: m.team1,
+          team2: m.team2,
+          date: m.date ? m.date.split('T')[0] : '',
+          time: m.time || (m.date ? m.date.split('T')[1]?.substring(0, 5) : ''),
+          hidden: m.hidden || false
+        }));
+        this.updateDashboardStats();
+      },
+      error: () => {
+        this.matches = [];
+        this.updateDashboardStats();
+      }
+    });
   }
 
   addMatch(): void {
@@ -355,133 +427,112 @@ export class AdminComponent implements OnInit, AfterViewInit {
       this.showToast('Veuillez remplir tous les champs requis', 'error');
       return;
     }
-    const newMatch: Match = {
-      id: this.generateId(),
+    
+    const matchData = {
       tournament: this.matchForm.tournament,
       format: this.matchForm.format || 'Bo1',
       team1: this.matchForm.team1,
       team2: this.matchForm.team2,
-      date: this.matchForm.date,
+      date: `${this.matchForm.date || new Date().toISOString().split('T')[0]}T${this.matchForm.time || '00:00'}:00`,
       time: this.matchForm.time,
       hidden: false
     };
-    this.matches.push(newMatch);
-    this.saveMatches(this.matches);
-    this.matchForm = { tournament: '', format: 'Bo1', team1: '', team2: '', date: '', time: '' };
-    this.updateDashboardStats();
-    this.showToast('Match programmé avec succès', 'success');
+    
+    this.apiService.createMatch(matchData).subscribe({
+      next: (created) => {
+        this.matches.push({
+          id: created.id,
+          tournament: created.tournament,
+          format: created.format,
+          team1: created.team1,
+          team2: created.team2,
+          date: this.matchForm.date,
+          time: this.matchForm.time,
+          hidden: false
+        });
+        this.matchForm = { tournament: '', format: 'Bo1', team1: '', team2: '', date: '', time: '' };
+        this.updateDashboardStats();
+        this.showToast('Match programmé dans la DB ✅', 'success');
+      },
+      error: (err) => {
+        console.error('Error creating match:', err);
+        this.showToast('Erreur lors de la création', 'error');
+      }
+    });
   }
 
-  deleteMatch(id: string | number): void {
-    this.matches = this.matches.filter(m => `${m.id}` !== `${id}`);
-    this.saveMatches(this.matches);
-    this.updateDashboardStats();
-    this.showToast('Match supprimé', 'warning');
+  deleteMatch(id: number | undefined): void {
+    if (!id) return;
+    
+    this.apiService.deleteMatch(id).subscribe({
+      next: () => {
+        this.matches = this.matches.filter(m => m.id !== id);
+        this.updateDashboardStats();
+        this.showToast('Match supprimé de la DB', 'warning');
+      },
+      error: () => {
+        this.showToast('Erreur lors de la suppression', 'error');
+      }
+    });
   }
 
-  toggleMatch(id: string | number): void {
-    const match = this.matches.find(m => `${m.id}` === `${id}`);
-    if (match) {
-      match.hidden = !match.hidden;
-      this.saveMatches(this.matches);
-      this.showToast(match.hidden ? 'Match masqué' : 'Match visible', 'success');
-    }
+  toggleMatch(id: number | undefined): void {
+    if (!id) return;
+    
+    this.apiService.toggleMatchVisibility(id).subscribe({
+      next: (updated) => {
+        const match = this.matches.find(m => m.id === id);
+        if (match) {
+          match.hidden = updated.hidden;
+          this.showToast(match.hidden ? 'Match masqué' : 'Match visible', 'success');
+        }
+      },
+      error: () => {
+        this.showToast('Erreur lors de la mise à jour', 'error');
+      }
+    });
   }
 
-  getMatches(): Match[] {
-    try {
-      const raw = localStorage.getItem('cgk_matches');
-      const parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  }
-
-  saveMatches(matches: Match[]): void {
-    try {
-      localStorage.setItem('cgk_matches', JSON.stringify(matches));
-    } catch {
-      /* ignore */
-    }
-  }
-
-  // =============== SCRIMS ===============
+  // =============== SCRIMS (API) ===============
   loadScrimRequests(): void {
-    this.scrimRequests = this.getScrimRequests();
-  }
-
-  updateScrim(id: string | number, status: 'accepted' | 'rejected'): void {
-    const request = this.scrimRequests.find(r => `${r.id}` === `${id}`);
-    if (request) {
-      request.status = status;
-      this.saveScrimRequests(this.scrimRequests);
-      this.updateDashboardStats();
-      this.showToast(`Demande ${status === 'accepted' ? 'acceptée' : 'refusée'}`, status === 'accepted' ? 'success' : 'warning');
-    }
-  }
-
-  getScrimRequests(): ScrimRequest[] {
-    try {
-      const raw = localStorage.getItem('cgk_scrim_requests');
-      let parsed = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(parsed) || !parsed.length) {
-        parsed = this.seedScrims();
-      }
-      return parsed.map((r: ScrimRequest, index: number) => ({
-        id: r.id ?? index,
-        teamName: r.teamName || 'Équipe inconnue',
-        teamEmail: r.teamEmail || 'non renseigné',
-        status: ['pending', 'accepted', 'rejected'].includes(r.status) ? r.status : 'pending',
-        level: r.level || 'N/C',
-        preferredDates: r.preferredDates || '',
-        details: r.details || ''
-      }));
-    } catch {
-      return this.seedScrims();
-    }
-  }
-
-  saveScrimRequests(list: ScrimRequest[]): void {
-    try {
-      localStorage.setItem('cgk_scrim_requests', JSON.stringify(list));
-    } catch {
-      /* ignore */
-    }
-  }
-
-  seedScrims(): ScrimRequest[] {
-    const seed: ScrimRequest[] = [
-      {
-        id: 1,
-        teamName: 'Kitsune Esports',
-        teamEmail: 'contact@kitsune.gg',
-        status: 'pending',
-        level: 'Master',
-        preferredDates: 'Vendredi soir',
-        details: 'Scrim Bo3, draft coachée souhaitée.'
+    this.apiService.getScrims().subscribe({
+      next: (data) => {
+        this.scrimRequests = data.map((s: any) => ({
+          id: s.id,
+          opponent: s.opponent,
+          description: s.description,
+          date: s.date ? s.date.split('T')[0] : '',
+          status: s.status || 'PENDING',
+          game: s.game,
+          notes: s.notes
+        }));
+        this.updateDashboardStats();
       },
-      {
-        id: 2,
-        teamName: 'Orca Gaming',
-        teamEmail: 'team@orca.gg',
-        status: 'accepted',
-        level: 'Diamond',
-        preferredDates: 'Samedi après-midi',
-        details: 'Préparation pour les qualifications.'
-      },
-      {
-        id: 3,
-        teamName: 'Phoenix Rising',
-        teamEmail: 'manager@phoenix.gg',
-        status: 'pending',
-        level: 'Challenger',
-        preferredDates: 'Dimanche',
-        details: 'Bo5 compétitif, VOD review possible.'
+      error: () => {
+        this.scrimRequests = [];
+        this.updateDashboardStats();
       }
-    ];
-    this.saveScrimRequests(seed);
-    return seed;
+    });
+  }
+
+  updateScrim(id: number | undefined, status: string): void {
+    if (!id) return;
+    
+    const request = this.scrimRequests.find(r => r.id === id);
+    if (!request) return;
+    
+    const updatedScrim = { ...request, status: status.toUpperCase() };
+    
+    this.apiService.updateScrim(id, updatedScrim).subscribe({
+      next: () => {
+        request.status = status.toUpperCase();
+        this.updateDashboardStats();
+        this.showToast(`Demande ${status === 'accepted' ? 'acceptée' : 'refusée'}`, status === 'accepted' ? 'success' : 'warning');
+      },
+      error: () => {
+        this.showToast('Erreur lors de la mise à jour', 'error');
+      }
+    });
   }
 
   // =============== UTILITIES ===============
@@ -549,8 +600,11 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   badgeClass(status: string): string {
     const classes: { [key: string]: string } = {
+      APPROVED: 'badge-accepted',
       accepted: 'badge-accepted',
+      REJECTED: 'badge-rejected',
       rejected: 'badge-rejected',
+      PENDING: 'badge-pending',
       pending: 'badge-pending'
     };
     return classes[status] || 'badge-pending';
@@ -558,8 +612,11 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   labelStatus(status: string): string {
     const map: { [key: string]: string } = {
+      PENDING: 'En attente',
       pending: 'En attente',
+      APPROVED: 'Acceptée',
       accepted: 'Acceptée',
+      REJECTED: 'Refusée',
       rejected: 'Refusée'
     };
     return map[status] || status;
@@ -570,10 +627,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.toastType = type;
     this.showToastNotification = true;
     setTimeout(() => this.showToastNotification = false, 3000);
-  }
-
-  generateId(): string | number {
-    return typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now();
   }
 
   getSortedEvents(): Event[] {
@@ -599,9 +652,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
   }
 
   getFilteredScrims(): ScrimRequest[] {
-    return this.scrimRequests.filter(
-      r => this.selectedFilter === 'all' || r.status === this.selectedFilter
-    );
+    if (this.selectedFilter === 'all') return this.scrimRequests;
+    const statusMap: { [key: string]: string } = {
+      pending: 'PENDING',
+      accepted: 'APPROVED',
+      rejected: 'REJECTED'
+    };
+    return this.scrimRequests.filter(r => r.status === statusMap[this.selectedFilter]);
   }
 
   getGreeting(): string {

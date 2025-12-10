@@ -10,58 +10,124 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  // Teams
+  // =============== TEAMS ===============
   getTeams(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/teams`);
   }
 
-  // Events
+  // =============== EVENTS ===============
   getEvents(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/events`);
   }
 
-  // Products
+  getUpcomingEvents(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/events/upcoming`);
+  }
+
+  createEvent(event: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/events`, event);
+  }
+
+  updateEvent(id: number, event: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/events/${id}`, event);
+  }
+
+  deleteEvent(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/events/${id}`);
+  }
+
+  // =============== MATCHES ===============
+  getMatches(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/matches`);
+  }
+
+  getVisibleMatches(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/matches/visible`);
+  }
+
+  getUpcomingMatches(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/matches/upcoming`);
+  }
+
+  createMatch(match: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/matches`, match);
+  }
+
+  updateMatch(id: number, match: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/matches/${id}`, match);
+  }
+
+  toggleMatchVisibility(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/matches/${id}/toggle`, {});
+  }
+
+  deleteMatch(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/matches/${id}`);
+  }
+
+  // =============== SCHEDULES ===============
+  getSchedules(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/schedules`);
+  }
+
+  getScheduleByDay(day: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/schedules/day/${day}`);
+  }
+
+  saveScheduleByDay(schedule: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/schedules/day`, schedule);
+  }
+
+  createSchedule(schedule: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/schedules`, schedule);
+  }
+
+  updateSchedule(id: number, schedule: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/schedules/${id}`, schedule);
+  }
+
+  deleteSchedule(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/schedules/${id}`);
+  }
+
+  // =============== SCRIMS ===============
+  getScrims(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/scrims`);
+  }
+
+  getScrimsByStatus(status: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/scrims/status/${status}`);
+  }
+
+  createScrim(scrim: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/scrims`, scrim);
+  }
+
+  updateScrim(id: number, scrim: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/scrims/${id}`, scrim);
+  }
+
+  deleteScrim(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/scrims/${id}`);
+  }
+
+  // =============== PRODUCTS ===============
   getProducts(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/products`);
   }
 
-  // Memberships
+  // =============== MEMBERSHIPS ===============
   getMemberships(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/memberships`);
   }
 
-  // Posts/News
+  // =============== POSTS/NEWS ===============
   getPosts(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/posts`);
   }
 
-  // Admin - Login (deprecated - use AuthService instead)
+  // =============== AUTH ===============
   adminLogin(credentials: any): Observable<any> {
     return this.http.post(`http://localhost:8081/auth/login`, credentials);
-  }
-
-  // Admin - Get Scrim Requests
-  getScrimRequests(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/admin/scrims`);
-  }
-
-  // Admin - Update Scrim Status
-  updateScrimStatus(id: string, status: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/admin/scrims/${id}`, { status });
-  }
-
-  // Admin - Save Schedule
-  saveSchedule(schedule: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/admin/schedule`, schedule);
-  }
-
-  // Admin - Save Events
-  saveEvents(events: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/admin/events`, events);
-  }
-
-  // Admin - Save Matches
-  saveMatches(matches: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/admin/matches`, matches);
   }
 }

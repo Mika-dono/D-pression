@@ -424,7 +424,7 @@
                 <span class="event-date">{{ formatDate(event.date) }}</span>
                 <span class="event-time">{{ formatTime(event.time) }}</span>
               </div>
-              <div class="event-desc" *ngIf="event.desc">{{ event.desc }}</div>
+              <div class="event-desc" *ngIf="event.description">{{ event.description }}</div>
               <div class="event-actions">
                 <button class="btn-icon-action delete" (click)="deleteEvent(event.id)" title="Supprimer">🗑️</button>
               </div>
@@ -545,25 +545,25 @@
             <div *ngFor="let req of getFilteredScrims()" class="scrim-card">
               <div class="scrim-header">
                 <div class="scrim-team">
-                  <span class="team-avatar">{{ req.teamName.charAt(0) }}</span>
+                  <span class="team-avatar">{{ req.opponent?.charAt(0) || '?' }}</span>
                   <div class="team-info">
-                    <span class="team-name">{{ req.teamName }}</span>
-                    <span class="team-email">{{ req.teamEmail }}</span>
+                    <span class="team-name">{{ req.opponent }}</span>
+                    <span class="team-game">{{ req.game || 'Non précisé' }}</span>
                   </div>
                 </div>
                 <span class="scrim-status" [class]="badgeClass(req.status)">{{ labelStatus(req.status) }}</span>
               </div>
               <div class="scrim-details">
                 <div class="detail-item">
-                  <span class="detail-label">Niveau</span>
-                  <span class="detail-value">{{ req.level }}</span>
+                  <span class="detail-label">Jeu</span>
+                  <span class="detail-value">{{ req.game || 'Non précisé' }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Disponibilités</span>
-                  <span class="detail-value">{{ req.preferredDates || 'Non précisé' }}</span>
+                  <span class="detail-label">Date souhaitée</span>
+                  <span class="detail-value">{{ req.date ? formatDate(req.date) : 'Non précisé' }}</span>
                 </div>
               </div>
-              <p class="scrim-message" *ngIf="req.details">{{ req.details }}</p>
+              <p class="scrim-message" *ngIf="req.description">{{ req.description }}</p>
               <div class="scrim-actions" *ngIf="req.status === 'pending'">
                 <button class="btn-accept" (click)="updateScrim(req.id, 'accepted')">✅ Accepter</button>
                 <button class="btn-reject" (click)="updateScrim(req.id, 'rejected')">❌ Refuser</button>

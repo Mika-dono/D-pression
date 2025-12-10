@@ -1,78 +1,233 @@
-<div class="bg-black text-white">
-  <!-- Header -->
-  <header class="border-b border-white/10 bg-black/80">
-    <div class="max-w-6xl mx-auto px-4 py-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-red-600 uppercase text-xs tracking-widest">Calendrier</p>
-          <h1 class="text-3xl font-bold">Matches, scrims et rencontres</h1>
-        </div>
-        <a routerLink="/" class="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 transition font-semibold text-sm">Retour</a>
+<!-- ========================================
+     SCHEDULE PAGE - T1.GG INSPIRED
+     Premium Esports Calendar
+     ======================================== -->
+
+<div class="schedule-page">
+  <!-- Hero Section -->
+  <section class="page-hero">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-grid"></div>
+    </div>
+    
+    <div class="hero-container">
+      <div class="hero-content animate-on-scroll">
+        <span class="page-badge">
+          <span class="badge-icon">📅</span>
+          <span class="badge-text">CALENDRIER</span>
+        </span>
+        <h1 class="page-title">
+          <span class="title-line">MATCHES &</span>
+          <span class="title-line accent">ÉVÉNEMENTS</span>
+        </h1>
+        <p class="page-subtitle">
+          Suivez notre calendrier compétitif : matches officiels, scrims, 
+          meet & greets et streams exclusifs. Ne manquez aucun moment.
+        </p>
       </div>
     </div>
-  </header>
+  </section>
 
-  <main class="max-w-6xl mx-auto px-4 py-12 space-y-10">
-    <!-- Description -->
-    <section class="space-y-4">
-      <p class="text-gray-400 max-w-3xl">Les événements listés ci-dessous sont synchronisés avec votre calendrier. Chaque match peut être suivi en détail et des notifications sont envoyées aux membres.</p>
-    </section>
-
-    <!-- Filters -->
-    <section class="flex items-center gap-4 flex-wrap">
-      <button *ngFor="let type of eventTypes" 
-              (click)="selectedFilter = type"
-              [class.active]="selectedFilter === type"
-              class="px-6 py-2 rounded-full text-sm font-semibold transition"
-              [class.bg-red-600]="selectedFilter === type"
-              [class.bg-white/10]="selectedFilter !== type"
-              [class.hover:bg-white/20]="selectedFilter !== type">
-        {{ type === 'all' ? 'Tous' : type.toUpperCase() }}
-      </button>
-    </section>
-
-    <!-- Events Grid -->
-    <section class="grid md:grid-cols-3 gap-6">
-      <div *ngFor="let event of getFilteredEvents()" 
-           class="bg-gray-900/50 border border-white/10 rounded-lg overflow-hidden hover:border-red-600/50 transition">
-        <div class="h-40 bg-gradient-to-br from-red-600/20 to-black flex items-center justify-center flex-col gap-2">
-          <span class="text-white/50 text-sm">{{ event.type || 'Event' }}</span>
-          <span class="text-white font-bold">{{ formatDate(event.date) }}</span>
+  <!-- Filters & View Toggle -->
+  <section class="controls-section">
+    <div class="section-container">
+      <div class="controls-wrapper animate-on-scroll">
+        <div class="filters-group">
+          <span class="filters-label">Filtrer</span>
+          <div class="filters-buttons">
+            <button *ngFor="let type of eventTypes" 
+                    (click)="selectedFilter = type"
+                    class="filter-btn"
+                    [class.active]="selectedFilter === type">
+              <span class="filter-icon" *ngIf="type !== 'all'">{{ getTypeIcon(type) }}</span>
+              <span class="filter-text">{{ type === 'all' ? 'Tous' : type | titlecase }}</span>
+            </button>
+          </div>
         </div>
-        <div class="p-4">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-white">{{ event.title || 'Événement' }}</h3>
-            <span class="inline-block px-2 py-1 text-xs bg-red-600/20 text-red-400 rounded">{{ event.type }}</span>
-          </div>
-          <p class="text-gray-400 text-sm mb-3">{{ event.description }}</p>
-          <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
-            <span>🕐 {{ formatTime(event.date) }}</span>
-            <span>📍 {{ event.location || 'Online' }}</span>
-          </div>
-          <button class="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-            Détails
+        
+        <div class="view-toggle">
+          <button class="toggle-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            <span>Liste</span>
+          </button>
+          <button class="toggle-btn" [class.active]="viewMode === 'calendar'" (click)="viewMode = 'calendar'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span>Calendrier</span>
           </button>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Info Section -->
-    <section class="border border-white/10 rounded-2xl p-6 bg-white/5 space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-red-600 text-xs uppercase tracking-widest">Opérations</p>
-          <h2 class="text-2xl font-semibold">Flux support & admin</h2>
+  <!-- Upcoming Events (Featured) -->
+  <section class="upcoming-section" *ngIf="viewMode === 'list'">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <div class="header-left">
+          <span class="section-badge">🔥 À VENIR</span>
+          <h2 class="section-title">Prochains <span class="accent">Événements</span></h2>
         </div>
-        <span class="text-gray-400 text-sm">Admin dashboard sécurisé</span>
+        <a routerLink="/teams" class="header-link">
+          <span>Voir nos équipes</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
       </div>
-      <p class="text-gray-400 text-sm">Chaque match est traçable côté admin : statut, journal d'audit et assignation des rôles de modération. Activez les notifications pour les membres.</p>
-      <ul class="grid md:grid-cols-2 gap-3 text-gray-400 text-sm">
-        <li>✓ Tags par type (tournoi, scrim, AMA) pour filtrer l'agenda.</li>
-        <li>✓ Notifications push/email pour les membres.</li>
-        <li>✓ Webhook vers Discord pour chaque événement clé.</li>
-        <li>✓ Accès au journal d'audit des opérations.</li>
-      </ul>
-    </section>
-  </main>
-</div>
+      
+      <div class="events-list">
+        <article *ngFor="let event of getUpcomingEvents(); let i = index" 
+                 class="event-card animate-on-scroll"
+                 [style.animation-delay]="(i * 0.1) + 's'">
+          <div class="event-date-block">
+            <span class="event-day">{{ getDay(event.date) }}</span>
+            <span class="event-month">{{ getMonth(event.date) }}</span>
+          </div>
+          
+          <div class="event-content">
+            <div class="event-header">
+              <span class="event-type" [ngClass]="getTypeBadgeClass(event.type)">
+                {{ getTypeIcon(event.type) }} {{ event.type || 'Event' }}
+              </span>
+              <span class="event-time">🕐 {{ formatTime(event.date) }}</span>
+            </div>
+            <h3 class="event-title">{{ event.title || 'Événement D-PRESSION' }}</h3>
+            <p class="event-desc">{{ event.description || 'Rejoignez-nous pour cet événement exclusif.' }}</p>
+            <div class="event-meta">
+              <span class="event-location">📍 {{ event.location || 'Online' }}</span>
+              <span class="event-team" *ngIf="event.team">🎮 {{ event.team }}</span>
+            </div>
+          </div>
+          
+          <div class="event-action">
+            <button class="btn-event-details">
+              <span>Détails</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </article>
+      </div>
+      
+      <!-- Empty State -->
+      <div *ngIf="getUpcomingEvents().length === 0" class="empty-state animate-on-scroll">
+        <div class="empty-icon">📅</div>
+        <h3 class="empty-title">Aucun événement à venir</h3>
+        <p class="empty-text">Aucun événement prévu dans cette catégorie pour le moment.</p>
+      </div>
+    </div>
+  </section>
 
+  <!-- Calendar View -->
+  <section class="calendar-section" *ngIf="viewMode === 'calendar'">
+    <div class="section-container">
+      <div class="calendar-header animate-on-scroll">
+        <button class="nav-btn" (click)="prevMonth()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <h2 class="calendar-month">
+          {{ currentMonth | date:'MMMM yyyy' }}
+        </h2>
+        <button class="nav-btn" (click)="nextMonth()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="calendar-grid animate-on-scroll">
+        <div class="calendar-weekdays">
+          <span *ngFor="let day of ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM']" class="weekday">{{ day }}</span>
+        </div>
+        <div class="calendar-days">
+          <div *ngFor="let day of calendarDays" 
+               class="calendar-day"
+               [class.today]="day.isToday"
+               [class.has-events]="day.events.length > 0">
+            <span class="day-number">{{ day.date }}</span>
+            <div class="day-events" *ngIf="day.events.length > 0">
+              <span *ngFor="let evt of day.events.slice(0, 2)" class="day-event-dot" [ngClass]="getTypeBadgeClass(evt.type)">
+              </span>
+              <span *ngIf="day.events.length > 2" class="more-events">+{{ day.events.length - 2 }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Past Events -->
+  <section class="past-section" *ngIf="viewMode === 'list' && getPastEvents().length > 0">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <h2 class="section-title">Événements <span class="accent">Passés</span></h2>
+      </div>
+      
+      <div class="past-grid">
+        <article *ngFor="let event of getPastEvents(); let i = index" 
+                 class="past-card animate-on-scroll"
+                 [style.animation-delay]="(i * 0.1) + 's'">
+          <div class="past-image">
+            <div class="past-overlay"></div>
+            <span class="past-badge">TERMINÉ</span>
+          </div>
+          <div class="past-content">
+            <span class="past-type">{{ getTypeIcon(event.type) }} {{ event.type }}</span>
+            <h3 class="past-title">{{ event.title }}</h3>
+            <p class="past-date">{{ formatDate(event.date) }}</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notifications CTA -->
+  <section class="notifications-section">
+    <div class="section-container">
+      <div class="notifications-card animate-on-scroll">
+        <div class="notifications-bg">
+          <div class="notifications-gradient"></div>
+          <div class="notifications-pattern"></div>
+        </div>
+        <div class="notifications-content">
+          <div class="notifications-icon">🔔</div>
+          <h2 class="notifications-title">Ne manquez rien</h2>
+          <p class="notifications-text">
+            Activez les notifications pour être alerté de tous nos matches et événements en temps réel.
+          </p>
+          <div class="notifications-features">
+            <div class="feature-item">
+              <span class="feature-icon">📱</span>
+              <span class="feature-text">Push mobile</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📧</span>
+              <span class="feature-text">Email alerts</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">💬</span>
+              <span class="feature-text">Discord</span>
+            </div>
+          </div>
+          <div class="notifications-actions">
+            <a routerLink="/membership" class="btn-primary">
+              <span>Activer les alertes</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,95 +1,222 @@
-<div class="bg-black text-white">
-  <!-- Header -->
-  <header class="border-b border-white/10 bg-black/80">
-    <div class="max-w-6xl mx-auto px-4 py-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-red-600 uppercase text-xs tracking-widest">Teams</p>
-          <h1 class="text-3xl font-bold">Nos Rosters Professionnels</h1>
-        </div>
-        <a routerLink="/" class="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 transition font-semibold text-sm">Retour</a>
+<!-- ========================================
+     TEAMS PAGE - T1.GG INSPIRED
+     Premium Esports Teams Showcase
+     ======================================== -->
+
+<div class="teams-page">
+  <!-- Hero Section -->
+  <section class="page-hero">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-particles">
+        <span class="particle" *ngFor="let i of [1,2,3,4,5,6]"></span>
       </div>
     </div>
-  </header>
+    
+    <div class="hero-container">
+      <div class="hero-content animate-on-scroll">
+        <span class="page-badge">
+          <span class="badge-icon">🎮</span>
+          <span class="badge-text">ROSTERS</span>
+        </span>
+        <h1 class="page-title">
+          <span class="title-line">NOS ÉQUIPES</span>
+          <span class="title-line accent">PROFESSIONNELLES</span>
+        </h1>
+        <p class="page-subtitle">
+          Découvrez nos rosters compétitifs qui dominent les scènes esports mondiales. 
+          Chaque équipe incarne l'excellence et la détermination de D-PRESSION.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-number">{{ displayedStats.teams }}</span>
+        <span class="stat-label">Équipes</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ displayedStats.players }}</span>
+        <span class="stat-label">Joueurs</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ displayedStats.titles }}+</span>
+        <span class="stat-label">Titres</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number">{{ displayedStats.staff }}</span>
+        <span class="stat-label">Staff</span>
+      </div>
+    </div>
+  </section>
 
-  <main class="max-w-7xl mx-auto px-4 py-12 space-y-12">
-    <!-- Filters -->
-    <section class="flex items-center gap-4 flex-wrap">
-      <button *ngFor="let game of games" 
-              (click)="applyFilter(game)"
-              [class.active]="selectedFilter === game"
-              class="px-6 py-2 rounded-full text-sm font-semibold transition"
-              [class.bg-red-600]="selectedFilter === game"
-              [class.bg-white/10]="selectedFilter !== game"
-              [class.hover:bg-white/20]="selectedFilter !== game">
-        {{ game === 'all' ? 'Tous' : game.toUpperCase() }}
-      </button>
-    </section>
-
-    <!-- Teams Grid -->
-    <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let team of filteredTeams" class="bg-gray-900/50 border border-white/10 rounded-lg overflow-hidden hover:border-red-600/50 transition">
-        <div class="h-48 bg-gradient-to-br from-red-600/20 to-black flex items-center justify-center">
-          <span class="text-white/50 text-lg font-bold">{{ team.name }}</span>
-        </div>
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-white text-lg">{{ team.name }}</h3>
-            <span class="text-red-600 text-xs uppercase tracking-widest font-bold">{{ team.game || 'Esports' }}</span>
-          </div>
-          <p class="text-gray-400 text-sm mb-4">{{ team.description || 'Team esports' }}</p>
-          <button class="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-            Voir le roster
+  <!-- Filters Section -->
+  <section class="filters-section">
+    <div class="section-container">
+      <div class="filters-wrapper animate-on-scroll">
+        <span class="filters-label">Filtrer par jeu</span>
+        <div class="filters-group">
+          <button *ngFor="let game of games" 
+                  (click)="applyFilter(game)"
+                  class="filter-btn"
+                  [class.active]="selectedFilter === game">
+            <span class="filter-icon" *ngIf="game !== 'all'">{{ getGameIcon(game) }}</span>
+            <span class="filter-text">{{ game === 'all' ? 'Tous' : game.toUpperCase().replace('-', ' ') }}</span>
           </button>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Stats -->
-    <section class="border border-white/10 rounded-2xl p-8 bg-gradient-to-br from-red-600/10 to-black/50">
-      <h2 class="text-3xl font-bold mb-8 text-center">Statistiques Globales</h2>
-      <div class="grid md:grid-cols-4 gap-6 text-center">
-        <div>
-          <p class="text-4xl font-bold text-red-600">{{ filteredTeams.length }}</p>
-          <p class="text-gray-400 mt-2">Teams</p>
+  <!-- Teams Grid -->
+  <section class="teams-section">
+    <div class="section-container">
+      <div class="teams-grid">
+        <article *ngFor="let team of filteredTeams; let i = index" 
+                 class="team-card animate-on-scroll"
+                 [style.animation-delay]="(i * 0.1) + 's'">
+          <div class="card-header">
+            <div class="team-visual">
+              <div class="visual-bg">
+                <div class="visual-gradient"></div>
+                <div class="visual-pattern"></div>
+              </div>
+              <div class="team-logo">
+                <span class="logo-icon">{{ getGameIcon(team.game) }}</span>
+              </div>
+              <div class="team-ranking" *ngIf="team.ranking">
+                <span class="ranking-value">#{{ team.ranking }}</span>
+              </div>
+            </div>
+            <div class="card-overlay">
+              <span class="game-badge" [ngClass]="getGameBadgeClass(team.game)">
+                {{ team.game || 'ESPORTS' }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="team-info">
+              <h3 class="team-name">{{ team.name }}</h3>
+              <p class="team-description">{{ team.description || 'Équipe professionnelle D-PRESSION' }}</p>
+            </div>
+            
+            <div class="team-stats">
+              <div class="mini-stat">
+                <span class="mini-stat-value">{{ team.players || 5 }}</span>
+                <span class="mini-stat-label">Joueurs</span>
+              </div>
+              <div class="mini-stat">
+                <span class="mini-stat-value">{{ team.wins || 0 }}</span>
+                <span class="mini-stat-label">Victoires</span>
+              </div>
+              <div class="mini-stat">
+                <span class="mini-stat-value">{{ team.winrate || '0%' }}</span>
+                <span class="mini-stat-label">Win Rate</span>
+              </div>
+            </div>
+            
+            <div class="card-actions">
+              <button class="btn-view-roster">
+                <span>Voir le roster</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+      
+      <!-- Empty State -->
+      <div *ngIf="filteredTeams.length === 0" class="empty-state animate-on-scroll">
+        <div class="empty-icon">🎮</div>
+        <h3 class="empty-title">Aucune équipe trouvée</h3>
+        <p class="empty-text">Aucune équipe ne correspond à ce filtre pour le moment.</p>
+        <button class="btn-reset" (click)="applyFilter('all')">
+          Voir toutes les équipes
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Achievements Section -->
+  <section class="achievements-section">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-badge">🏆 PALMARÈS</span>
+        <h2 class="section-title">Notre <span class="accent">Excellence</span></h2>
+        <p class="section-subtitle">Années de victoires et de domination sur les scènes internationales</p>
+      </div>
+      
+      <div class="achievements-grid">
+        <div class="achievements-col animate-on-scroll">
+          <h3 class="col-title">
+            <span class="col-icon">🏆</span>
+            Tournois Majeurs
+          </h3>
+          <div class="achievements-list">
+            <div *ngFor="let achievement of achievements" class="achievement-item">
+              <span class="achievement-icon">{{ achievement.icon }}</span>
+              <div class="achievement-info">
+                <span class="achievement-title">{{ achievement.title }}</span>
+                <span class="achievement-category">{{ achievement.category }}</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <p class="text-4xl font-bold text-red-600">{{ filteredTeams.length * 5 }}</p>
-          <p class="text-gray-400 mt-2">Joueurs</p>
-        </div>
-        <div>
-          <p class="text-4xl font-bold text-red-600">15+</p>
-          <p class="text-gray-400 mt-2">Titres</p>
-        </div>
-        <div>
-          <p class="text-4xl font-bold text-red-600">{{ filteredTeams.length * 3 }}</p>
-          <p class="text-gray-400 mt-2">Staff</p>
+        
+        <div class="achievements-col animate-on-scroll">
+          <h3 class="col-title">
+            <span class="col-icon">⭐</span>
+            Distinctions
+          </h3>
+          <div class="achievements-list">
+            <div *ngFor="let distinction of distinctions" class="achievement-item">
+              <span class="achievement-icon">{{ distinction.icon }}</span>
+              <div class="achievement-info">
+                <span class="achievement-title">{{ distinction.title }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Palmares -->
-    <section class="border border-white/10 rounded-2xl p-8 bg-gradient-to-br from-red-600/10 to-black/50">
-      <h2 class="text-3xl font-bold mb-8">Palmarès</h2>
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="space-y-3">
-          <h3 class="font-bold text-white">Tournois Majeurs</h3>
-          <ul class="space-y-2 text-gray-400 text-sm">
-            <li>🏆 LEC Championship 2023</li>
-            <li>🏆 Valorant Champions 2023</li>
-            <li>🏆 Regional Finals 2024</li>
-          </ul>
+  <!-- Join CTA -->
+  <section class="join-section">
+    <div class="section-container">
+      <div class="join-card animate-on-scroll">
+        <div class="join-bg">
+          <div class="join-gradient"></div>
+          <div class="join-pattern"></div>
         </div>
-        <div class="space-y-3">
-          <h3 class="font-bold text-white">Distinctions</h3>
-          <ul class="space-y-2 text-gray-400 text-sm">
-            <li>⭐ Best Team Award 2023</li>
-            <li>⭐ Community Favorite 2024</li>
-            <li>⭐ Rising Stars 2024</li>
-          </ul>
+        <div class="join-content">
+          <span class="join-badge">RECRUTEMENT</span>
+          <h2 class="join-title">Rejoignez nos rangs</h2>
+          <p class="join-text">
+            Vous avez le talent et la détermination ? Postulez pour rejoindre 
+            l'une de nos équipes professionnelles et écrivez l'histoire avec nous.
+          </p>
+          <div class="join-actions">
+            <a routerLink="/membership" class="btn-primary">
+              <span>Postuler</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <a routerLink="/schedule" class="btn-outline">
+              <span>Voir les tryouts</span>
+            </a>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 </div>
-

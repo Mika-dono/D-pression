@@ -1,74 +1,243 @@
-<header class="sticky top-0 z-40 backdrop-blur bg-black/70 border-b border-white/10">
-  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-    <div class="flex items-center space-x-3">
-      <div class="bg-primary px-3 py-2 rounded-md font-bold tracking-wide">KJX</div>
-      <nav class="hidden md:flex items-center space-x-6 text-sm uppercase tracking-wide text-white/80">
-        <a routerLink="/" class="hover:text-white">Accueil</a>
-        <a routerLink="/teams" class="hover:text-white">Rosters</a>
-        <a routerLink="/schedule" class="hover:text-white">Calendrier</a>
-        <a routerLink="/shop" class="hover:text-white">Boutique</a>
-        <a routerLink="/news" class="hover:text-white">News</a>
-      </nav>
-    </div>
-    <a routerLink="/" class="px-4 py-2 rounded-full bg-primary hover:bg-red-700 transition font-semibold text-sm">Retour</a>
-  </div>
-</header>
+<!-- ========================================
+     MEMBERSHIP PAGE - T1.GG INSPIRED
+     Premium Esports Membership Plans
+     ======================================== -->
 
-<main class="max-w-6xl mx-auto px-4 py-12 space-y-10">
-  <section class="space-y-4">
-    <p class="text-primary uppercase text-xs tracking-[0.3em]">Membership</p>
-    <h1 class="text-4xl font-bold">Formules & avantages</h1>
-    <p class="text-white/70 max-w-3xl">Rejoignez le cercle KJX : contenus backstage, réductions boutique, Q&A joueurs et salons privés. Les cartes ci-dessous consomment l'API `/api/memberships` ou vos données Supabase si vous avez branché les tables.</p>
-    <div class="flex flex-wrap gap-3">
-      <a routerLink="/shop" class="px-4 py-2 rounded-full bg-primary hover:bg-red-700 transition font-semibold text-sm">Profiter des réductions</a>
-      <span class="px-4 py-2 rounded-full border border-white/20 text-sm text-white/60">Pilotage sécurisé admin</span>
+<div class="membership-page">
+  <!-- Hero Section -->
+  <section class="page-hero">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-glow"></div>
     </div>
-  </section>
-
-  <section id="membership-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div *ngFor="let membership of memberships" class="border border-white/10 rounded-2xl p-6 bg-gradient-to-br from-primary/10 to-black/50 space-y-4 hover:border-primary/50 transition">
-      <div>
-        <h3 class="text-xl font-bold text-white">{{ membership.name }}</h3>
-        <p class="text-primary text-2xl font-bold mt-2">{{ membership.price }}€<span class="text-white/50 text-sm">/mois</span></p>
+    
+    <div class="hero-container">
+      <div class="hero-content animate-on-scroll">
+        <span class="page-badge">
+          <span class="badge-icon">👑</span>
+          <span class="badge-text">MEMBERSHIP</span>
+        </span>
+        <h1 class="page-title">
+          <span class="title-line">REJOIGNEZ</span>
+          <span class="title-line accent">L'ÉLITE</span>
+        </h1>
+        <p class="page-subtitle">
+          Devenez membre de la communauté D-PRESSION et accédez à des avantages 
+          exclusifs : contenus backstage, réductions, Discord privé et bien plus.
+        </p>
+        
+        <!-- Community Stats -->
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ communityStats.members | number }}</span>
+            <span class="stat-label">Membres</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value">{{ communityStats.discordMembers | number }}</span>
+            <span class="stat-label">Discord</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value">{{ communityStats.countries }}+</span>
+            <span class="stat-label">Pays</span>
+          </div>
+        </div>
       </div>
-      <ul class="space-y-2 text-white/70 text-sm">
-        <li *ngFor="let benefit of membership.benefits">✓ {{ benefit }}</li>
-      </ul>
-      <button class="w-full mt-4 px-4 py-2 bg-primary text-white rounded font-semibold hover:bg-red-700 transition text-sm">
-        Choisir ce plan
-      </button>
     </div>
   </section>
 
-  <section class="border border-white/10 rounded-2xl p-6 bg-white/5 space-y-4">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-primary text-xs uppercase tracking-[0.2em]">Fidélité</p>
-        <h2 class="text-2xl font-semibold">Points, badges et support</h2>
+  <!-- Pricing Section -->
+  <section class="pricing-section">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-badge">💎 NOS FORMULES</span>
+        <h2 class="section-title">Choisissez votre <span class="accent">Plan</span></h2>
+        <p class="section-subtitle">Des formules adaptées à chaque fan, de l'accès gratuit à l'expérience VIP complète</p>
       </div>
-      <span class="text-white/60 text-sm">Gestion admin sécurisée</span>
-    </div>
-    <ul class="grid md:grid-cols-2 gap-3 text-white/70 text-sm">
-      <li>✓ Points, niveaux et badges gérés côté Supabase ou en données fictives.</li>
-      <li>✓ Notifications push/email pilotées dans l'admin (ServiceNotification du diagramme).</li>
-      <li>✓ Support premium avec tickets prioritaires et suivi SLA.</li>
-      <li>✓ Journaux d'audit disponibles côté back-office.</li>
-    </ul>
-  </section>
-
-  <section class="border border-white/10 rounded-2xl p-6 bg-gradient-to-br from-primary/10 to-black/50 space-y-4">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-primary text-xs uppercase tracking-[0.2em]">Communauté</p>
-        <h2 class="text-2xl font-semibold">Onboarding rapide</h2>
+      
+      <div class="pricing-grid">
+        <article *ngFor="let plan of memberships; let i = index" 
+                 class="pricing-card animate-on-scroll"
+                 [class.popular]="plan.popular"
+                 [class.selected]="selectedPlan === plan.id"
+                 [style.animation-delay]="(i * 0.1) + 's'"
+                 (click)="selectPlan(plan.id)">
+          
+          <!-- Popular Badge -->
+          <div class="popular-badge" *ngIf="plan.popular">
+            <span>⭐ POPULAIRE</span>
+          </div>
+          
+          <div class="card-header">
+            <div class="plan-icon">{{ plan.icon }}</div>
+            <h3 class="plan-name">{{ plan.name }}</h3>
+            <p class="plan-description">{{ plan.description }}</p>
+          </div>
+          
+          <div class="card-pricing">
+            <div class="price-wrapper">
+              <span class="price-amount">{{ formatPrice(plan.price) }}</span>
+              <span class="price-period" *ngIf="plan.price > 0">{{ plan.period }}</span>
+            </div>
+          </div>
+          
+          <div class="card-benefits">
+            <ul class="benefits-list">
+              <li *ngFor="let benefit of plan.benefits" class="benefit-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="benefit-icon">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>{{ benefit }}</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="card-action">
+            <button class="btn-subscribe" [class.btn-primary]="plan.popular" (click)="subscribeTo(plan); $event.stopPropagation()">
+              <span>{{ plan.price === 0 ? 'Rejoindre' : 'S\'abonner' }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </article>
       </div>
-      <span class="text-white/60 text-sm">Prêt pour les membres</span>
     </div>
-    <ul class="grid md:grid-cols-3 gap-3 text-white/70 text-sm">
-      <li>✓ Templates d'emails de bienvenue et relances d'expiration.</li>
-      <li>✓ Accès Discord/privé configurable par niveau.</li>
-      <li>✓ Hooks web pour synchroniser vos autres outils.</li>
-    </ul>
   </section>
-</main>
 
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-badge">🎁 AVANTAGES</span>
+        <h2 class="section-title">Pourquoi devenir <span class="accent">Membre</span></h2>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">💬</div>
+          <h3 class="feature-title">Discord Exclusif</h3>
+          <p class="feature-text">Accédez aux salons privés et discutez directement avec l'équipe et la communauté.</p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🎬</div>
+          <h3 class="feature-title">Behind-the-Scenes</h3>
+          <p class="feature-text">Découvrez l'envers du décor avec des contenus exclusifs sur nos entraînements et événements.</p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🛍️</div>
+          <h3 class="feature-title">Réductions Boutique</h3>
+          <p class="feature-text">Profitez de remises exclusives sur tout le merchandise officiel D-PRESSION.</p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🎤</div>
+          <h3 class="feature-title">Q&A avec les Joueurs</h3>
+          <p class="feature-text">Participez à des sessions questions-réponses mensuelles avec nos joueurs pros.</p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🎟️</div>
+          <h3 class="feature-title">Accès Events VIP</h3>
+          <p class="feature-text">Invitations prioritaires à nos événements et meet & greets exclusifs.</p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🏅</div>
+          <h3 class="feature-title">Badges & Émotes</h3>
+          <p class="feature-text">Débloquez des badges exclusifs et émotes personnalisées pour la communauté.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-badge">💬 TÉMOIGNAGES</span>
+        <h2 class="section-title">Ce qu'ils en <span class="accent">Pensent</span></h2>
+      </div>
+      
+      <div class="testimonials-grid">
+        <article *ngFor="let testimonial of testimonials" class="testimonial-card animate-on-scroll">
+          <div class="testimonial-content">
+            <p class="testimonial-text">"{{ testimonial.text }}"</p>
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">{{ testimonial.avatar }}</div>
+            <div class="author-info">
+              <span class="author-name">{{ testimonial.name }}</span>
+              <span class="author-plan">Membre {{ testimonial.plan }}</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-badge">❓ FAQ</span>
+        <h2 class="section-title">Questions <span class="accent">Fréquentes</span></h2>
+      </div>
+      
+      <div class="faq-grid">
+        <div class="faq-item animate-on-scroll">
+          <h3 class="faq-question">Comment puis-je annuler mon abonnement ?</h3>
+          <p class="faq-answer">Vous pouvez annuler à tout moment depuis votre espace membre. L'accès reste actif jusqu'à la fin de la période payée.</p>
+        </div>
+        
+        <div class="faq-item animate-on-scroll">
+          <h3 class="faq-question">Les réductions boutique sont-elles cumulables ?</h3>
+          <p class="faq-answer">Les réductions membre s'appliquent sur le prix public et ne sont pas cumulables avec les promotions en cours.</p>
+        </div>
+        
+        <div class="faq-item animate-on-scroll">
+          <h3 class="faq-question">Comment accéder au Discord privé ?</h3>
+          <p class="faq-answer">Après votre inscription, vous recevrez un lien d'invitation par email. Liez votre compte Discord pour accéder aux salons exclusifs.</p>
+        </div>
+        
+        <div class="faq-item animate-on-scroll">
+          <h3 class="faq-question">Puis-je changer de formule ?</h3>
+          <p class="faq-answer">Oui ! Vous pouvez upgrader ou downgrader votre formule à tout moment. Le changement prend effet immédiatement.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="section-container">
+      <div class="cta-card animate-on-scroll">
+        <div class="cta-bg">
+          <div class="cta-gradient"></div>
+          <div class="cta-pattern"></div>
+        </div>
+        <div class="cta-content">
+          <h2 class="cta-title">Prêt à rejoindre la famille ?</h2>
+          <p class="cta-text">
+            Choisissez votre formule et devenez membre de la communauté D-PRESSION dès aujourd'hui.
+          </p>
+          <div class="cta-actions">
+            <a href="#" class="btn-primary btn-large">
+              <span>Commencer maintenant</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <a routerLink="/shop" class="btn-outline">
+              <span>Voir la boutique</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

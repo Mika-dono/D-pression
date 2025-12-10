@@ -1,161 +1,396 @@
+<!-- ========================================
+     D-PRESSION HOME - T1.GG INSPIRED
+     Premium Esports Landing Page
+     ======================================== -->
+
 <!-- Hero Section -->
-<section class="relative overflow-hidden bg-gradient-to-br from-black via-ink to-primary/40">
-  <div class="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center"></div>
-  <div class="max-w-6xl mx-auto px-4 py-16 grid lg:grid-cols-2 gap-12 items-center relative">
-    <div class="space-y-6">
-      <p class="text-primary uppercase tracking-[0.3em] text-xs">We are KJX</p>
-      <h1 class="text-4xl md:text-5xl font-bold leading-tight">Recréation multi-page de l'écosystème KJX.gg avec back-end Spring Boot.</h1>
-      <p class="text-white/70 text-lg">Chaque section reprend la hiérarchie et la densité du site officiel : rosters, calendrier, boutique, espace membre, newsroom et pilotage admin connecté à Supabase.</p>
-      <div class="flex flex-wrap gap-3">
-        <a routerLink="/teams" class="px-6 py-3 bg-primary text-white font-semibold rounded-full hover:bg-red-700 transition">Explorer</a>
-        <button class="px-6 py-3 border border-white/20 text-white font-semibold rounded-full hover:bg-white/10 transition">En savoir plus</button>
+<section class="hero" [class.visible]="heroVisible">
+  <!-- Background Effects -->
+  <div class="hero-bg">
+    <div class="hero-gradient"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-noise"></div>
+    <div class="hero-particles">
+      <div class="particle" *ngFor="let i of [1,2,3,4,5,6,7,8]"></div>
+    </div>
+  </div>
+
+  <!-- Floating Elements -->
+  <div class="hero-floats">
+    <div class="float-element float-1"></div>
+    <div class="float-element float-2"></div>
+    <div class="float-element float-3"></div>
+  </div>
+
+  <div class="hero-container">
+    <div class="hero-content">
+      <!-- Badge -->
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">ESPORTS EXCELLENCE</span>
       </div>
-      <div class="grid grid-cols-2 gap-4 text-sm text-white/70">
-        <div>
-          <p class="text-2xl font-bold text-white" id="hero-events-count">{{ events.length }} événements</p>
-          <p class="text-white/50">cette saison</p>
+
+      <!-- Main Title -->
+      <h1 class="hero-title">
+        <span class="hero-title-line">DOMINEZ</span>
+        <span class="hero-title-line accent">CHAQUE</span>
+        <span class="hero-title-line">BATAILLE</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="hero-subtitle">
+        D-PRESSION Esports — L'élite de la compétition gaming française. 
+        Rejoignez notre communauté de champions et vivez l'excellence.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="hero-actions">
+        <a routerLink="/teams" class="hero-cta cta-primary">
+          <span>Nos Équipes</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+        <a routerLink="/membership" class="hero-cta cta-secondary">
+          <span>Devenir Membre</span>
+        </a>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="stat-value">{{ displayedStats.teams }}</span>
+          <span class="stat-label">Équipes</span>
         </div>
-        <div>
-          <p class="text-2xl font-bold text-white" id="hero-products-count">{{ products.length }} produits</p>
-          <p class="text-white/50">en boutique</p>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-value">{{ displayedStats.events }}</span>
+          <span class="stat-label">Événements</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-value">{{ displayedStats.members }}+</span>
+          <span class="stat-label">Membres</span>
         </div>
       </div>
     </div>
-    <div class="relative">
-      <div class="absolute -inset-6 bg-primary/20 blur-3xl"></div>
-      <div class="relative bg-black/50 border border-white/10 rounded-2xl p-6 shadow-2xl space-y-4">
-        <div class="h-48 bg-gradient-to-br from-primary/30 to-black rounded-lg flex items-center justify-center">
-          <span class="text-white/50 text-sm">Hero Image</span>
+
+    <!-- Hero Visual -->
+    <div class="hero-visual">
+      <div class="visual-frame">
+        <div class="frame-corner top-left"></div>
+        <div class="frame-corner top-right"></div>
+        <div class="frame-corner bottom-left"></div>
+        <div class="frame-corner bottom-right"></div>
+        
+        <div class="visual-content">
+          <div class="visual-logo">
+            <span class="logo-d">D</span>
+            <div class="logo-glow"></div>
+          </div>
+          <div class="visual-text">PRESSION</div>
         </div>
+        
+        <div class="visual-scan"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator">
+    <span class="scroll-text">SCROLL</span>
+    <div class="scroll-line">
+      <div class="scroll-dot"></div>
     </div>
   </div>
 </section>
 
-<!-- Rosters Section -->
-<section class="max-w-6xl mx-auto px-4 py-14 space-y-8">
-  <div class="flex items-center justify-between">
-    <div>
-      <p class="text-primary uppercase text-xs tracking-[0.2em]">Rosters</p>
-      <h2 class="text-3xl font-bold">Line-ups KJX en lumière</h2>
+<!-- Teams Section -->
+<section class="section teams-section animate-on-scroll">
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-badge">ROSTERS</div>
+      <h2 class="section-title">Nos <span class="accent">Équipes</span></h2>
+      <p class="section-subtitle">Des joueurs d'exception, une passion commune pour la victoire</p>
     </div>
-    <a routerLink="/teams" class="text-white/60 text-sm hover:text-white">Tous les rosters →</a>
-  </div>
-  <div id="team-preview" class="grid md:grid-cols-2 gap-6">
-    <div *ngFor="let team of teams.slice(0, 2)" class="border border-white/10 rounded-lg overflow-hidden hover:border-primary/50 transition bg-gradient-to-br from-white/5 to-black/50">
-      <div class="h-48 bg-gradient-to-br from-primary/20 to-black flex items-center justify-center">
-        <span class="text-white/50">{{ team.name }}</span>
-      </div>
-      <div class="p-4">
-        <h3 class="font-bold text-white mb-2">{{ team.name }}</h3>
-        <p class="text-white/60 text-sm mb-3">{{ team.game | uppercase }}</p>
-        <div class="flex gap-2">
-          <span class="px-2 py-1 bg-primary/20 text-primary text-xs rounded">{{ team.members?.length || 0 }} joueurs</span>
+
+    <div class="teams-grid">
+      <a *ngFor="let team of teams; let i = index" 
+         routerLink="/teams" 
+         class="team-card"
+         [style.animation-delay]="(i * 0.1) + 's'">
+        <div class="team-image">
+          <div class="team-overlay"></div>
+          <div class="team-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
         </div>
-      </div>
+        <div class="team-info">
+          <span class="team-game" [class]="getTeamBadgeClass(team.game)">{{ team.game }}</span>
+          <h3 class="team-name">{{ team.name }}</h3>
+          <p class="team-players">{{ team.members?.length || 5 }} joueurs</p>
+        </div>
+        <div class="team-arrow">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="7" y1="17" x2="17" y2="7"/>
+            <polyline points="7 7 17 7 17 17"/>
+          </svg>
+        </div>
+      </a>
+    </div>
+
+    <div class="section-cta">
+      <a routerLink="/teams" class="btn-outline">
+        <span>Voir tous les rosters</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- Products Section -->
-<section class="bg-white text-black py-14">
-  <div class="max-w-6xl mx-auto px-4 space-y-8">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-primary uppercase text-xs tracking-[0.2em]">Boutique</p>
-        <h2 class="text-3xl font-bold">Derniers drops</h2>
-      </div>
-      <a routerLink="/shop" class="text-black/60 text-sm hover:text-black">Ouvrir la boutique →</a>
+<!-- Featured News Section -->
+<section class="section news-section animate-on-scroll">
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-badge">ACTUALITÉS</div>
+      <h2 class="section-title">Dernières <span class="accent">News</span></h2>
     </div>
-    <div id="product-preview" class="grid md:grid-cols-3 gap-6">
-      <div *ngFor="let product of products.slice(0, 3)" class="bg-white border border-black/10 rounded-lg overflow-hidden hover:shadow-lg transition">
-        <div class="h-40 bg-gradient-to-br from-black/5 to-black/20 flex items-center justify-center">
-          <span class="text-black/50">{{ product.name }}</span>
+
+    <div class="news-grid">
+      <article *ngFor="let post of posts; let i = index" 
+               class="news-card"
+               [class.featured]="i === 0"
+               [style.animation-delay]="(i * 0.1) + 's'">
+        <div class="news-image">
+          <div class="news-overlay"></div>
+          <span class="news-category">{{ post.category || 'ESPORTS' }}</span>
         </div>
-        <div class="p-4">
-          <h3 class="font-bold text-black mb-2">{{ product.name }}</h3>
-          <p class="text-black/60 text-sm mb-3">{{ product.category }}</p>
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-black">{{ product.price }}€</span>
-            <span class="px-2 py-1 bg-primary/20 text-primary text-xs rounded" *ngIf="product.stock > 0">En stock</span>
+        <div class="news-content">
+          <time class="news-date">{{ post.created_at | date:'dd MMM yyyy' }}</time>
+          <h3 class="news-title">{{ post.title }}</h3>
+          <p class="news-excerpt" *ngIf="post.excerpt">{{ post.excerpt }}</p>
+          <a routerLink="/news" class="news-link">
+            <span>Lire la suite</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <div class="section-cta">
+      <a routerLink="/news" class="btn-outline">
+        <span>Toutes les actualités</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Shop Preview Section -->
+<section class="section shop-section animate-on-scroll">
+  <div class="shop-bg"></div>
+  <div class="section-container">
+    <div class="section-header light">
+      <div class="section-badge">BOUTIQUE</div>
+      <h2 class="section-title">Derniers <span class="accent">Drops</span></h2>
+      <p class="section-subtitle">Représentez D-PRESSION avec notre collection exclusive</p>
+    </div>
+
+    <div class="products-grid">
+      <div *ngFor="let product of products; let i = index" 
+           class="product-card"
+           [style.animation-delay]="(i * 0.1) + 's'">
+        <div class="product-image">
+          <div class="product-badge" *ngIf="i === 0">NEW</div>
+          <div class="product-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+        </div>
+        <div class="product-info">
+          <span class="product-category">{{ product.category || 'Merch' }}</span>
+          <h3 class="product-name">{{ product.name }}</h3>
+          <div class="product-footer">
+            <span class="product-price">{{ product.price }}€</span>
+            <span class="product-stock" [class.in-stock]="product.stock > 0">
+              {{ product.stock > 0 ? 'En stock' : 'Rupture' }}
+            </span>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- Membership Section -->
-<section class="max-w-6xl mx-auto px-4 py-14 space-y-8">
-  <div class="flex items-center justify-between">
-    <div>
-      <p class="text-primary uppercase text-xs tracking-[0.2em]">Membership</p>
-      <h2 class="text-3xl font-bold">Formules & avantages</h2>
-    </div>
-    <a routerLink="/membership" class="text-white/60 text-sm hover:text-white">Voir tous les avantages →</a>
-  </div>
-  <div id="membership-preview" class="grid md:grid-cols-4 gap-6">
-    <div *ngFor="let membership of memberships.slice(0, 4)" class="border border-white/10 rounded-lg p-6 bg-gradient-to-br from-primary/10 to-black/50">
-      <h3 class="font-bold text-white mb-2">{{ membership.name }}</h3>
-      <p class="text-primary text-lg font-bold mb-4">{{ membership.price }}€/m</p>
-      <ul class="space-y-2 text-white/60 text-sm">
-        <li *ngFor="let benefit of membership.benefits?.slice(0, 3)">✓ {{ benefit }}</li>
-      </ul>
-      <button class="mt-4 w-full px-4 py-2 bg-primary text-white rounded hover:bg-red-700 transition text-sm font-semibold">
-        Choisir ce plan
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- News Section -->
-<section class="bg-gradient-to-b from-ink via-black to-ink py-14">
-  <div class="max-w-6xl mx-auto px-4 space-y-8">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-primary uppercase text-xs tracking-[0.2em]">Newsroom</p>
-        <h2 class="text-3xl font-bold">Actualités KJX</h2>
-      </div>
-      <a routerLink="/news" class="text-white/60 text-sm hover:text-white">Voir toutes les news →</a>
-    </div>
-    <div id="news-preview" class="grid md:grid-cols-3 gap-6">
-      <div *ngFor="let post of posts.slice(0, 3)" class="border border-white/10 rounded-lg overflow-hidden hover:border-primary/50 transition bg-white/5">
-        <div class="h-40 bg-gradient-to-br from-primary/20 to-black flex items-center justify-center">
-          <span class="text-white/50">{{ post.title }}</span>
-        </div>
-        <div class="p-4">
-          <p class="text-primary text-xs mb-2">{{ post.category | uppercase }}</p>
-          <h3 class="font-bold text-white mb-2">{{ post.title }}</h3>
-          <p class="text-white/60 text-sm mb-3">{{ post.excerpt }}</p>
-          <p class="text-white/40 text-xs">{{ post.date | date: 'dd MMM yyyy' }}</p>
-        </div>
-      </div>
+    <div class="section-cta">
+      <a routerLink="/shop" class="btn-primary">
+        <span>Visiter la boutique</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
     </div>
   </div>
 </section>
 
 <!-- Stats Section -->
-<section class="max-w-6xl mx-auto px-4 py-14">
-  <div class="border border-white/10 rounded-2xl p-8 bg-gradient-to-br from-primary/10 to-black/50">
-    <h2 class="text-3xl font-bold mb-8 text-center">Nos statistiques</h2>
-    <div class="grid md:grid-cols-4 gap-6">
-      <div class="text-center">
-        <p class="text-3xl font-bold text-primary">{{ teams.length }}</p>
-        <p class="text-white/60 text-sm mt-2">Rosters</p>
+<section class="section stats-section animate-on-scroll" [class.visible]="statsVisible">
+  <div class="stats-bg">
+    <div class="stats-grid-bg"></div>
+  </div>
+  <div class="section-container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <span class="stat-number">{{ displayedStats.teams }}</span>
+        <span class="stat-label">Équipes Actives</span>
       </div>
-      <div class="text-center">
-        <p class="text-3xl font-bold text-primary">{{ events.length }}</p>
-        <p class="text-white/60 text-sm mt-2">Événements</p>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="8" r="7"/>
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+          </svg>
+        </div>
+        <span class="stat-number">{{ displayedStats.events }}</span>
+        <span class="stat-label">Événements</span>
       </div>
-      <div class="text-center">
-        <p class="text-3xl font-bold text-primary">{{ products.length }}</p>
-        <p class="text-white/60 text-sm mt-2">Produits</p>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <span class="stat-number">{{ displayedStats.products }}</span>
+        <span class="stat-label">Produits</span>
       </div>
-      <div class="text-center">
-        <p class="text-3xl font-bold text-primary">{{ posts.length }}</p>
-        <p class="text-white/60 text-sm mt-2">Articles</p>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="stat-number">{{ displayedStats.members }}+</span>
+        <span class="stat-label">Supporters</span>
       </div>
     </div>
   </div>
 </section>
 
+<!-- Membership CTA Section -->
+<section class="section cta-section animate-on-scroll">
+  <div class="cta-bg">
+    <div class="cta-gradient"></div>
+    <div class="cta-pattern"></div>
+  </div>
+  <div class="section-container">
+    <div class="cta-content">
+      <div class="cta-badge">REJOINDRE L'AVENTURE</div>
+      <h2 class="cta-title">Devenez membre <span class="accent">D-PRESSION</span></h2>
+      <p class="cta-text">
+        Accédez à du contenu exclusif, des réductions sur notre boutique, 
+        et rejoignez une communauté passionnée de gamers.
+      </p>
+      
+      <div class="membership-preview">
+        <div *ngFor="let membership of memberships; let i = index" 
+             class="membership-card"
+             [class.featured]="i === 1">
+          <div class="membership-header">
+            <span class="membership-name">{{ membership.name }}</span>
+            <span class="membership-price">{{ membership.price }}€<small>/mois</small></span>
+          </div>
+          <ul class="membership-benefits">
+            <li *ngFor="let benefit of membership.benefits?.slice(0, 3)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              {{ benefit }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <a routerLink="/membership" class="btn-primary btn-large">
+        <span>Voir tous les plans</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Upcoming Events Section -->
+<section class="section events-section animate-on-scroll" *ngIf="events.length > 0">
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-badge">CALENDRIER</div>
+      <h2 class="section-title">Prochains <span class="accent">Événements</span></h2>
+    </div>
+
+    <div class="events-list">
+      <div *ngFor="let event of events; let i = index" 
+           class="event-card"
+           [style.animation-delay]="(i * 0.1) + 's'">
+        <div class="event-date">
+          <span class="event-day">{{ event.date | date:'dd' }}</span>
+          <span class="event-month">{{ event.date | date:'MMM' }}</span>
+        </div>
+        <div class="event-info">
+          <span class="event-type">{{ event.type || 'Tournament' }}</span>
+          <h3 class="event-title">{{ event.title }}</h3>
+          <p class="event-desc" *ngIf="event.description">{{ event.description }}</p>
+        </div>
+        <div class="event-action">
+          <a routerLink="/schedule" class="event-link">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-cta">
+      <a routerLink="/schedule" class="btn-outline">
+        <span>Voir le calendrier complet</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

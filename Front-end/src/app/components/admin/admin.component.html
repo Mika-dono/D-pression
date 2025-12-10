@@ -1,580 +1,648 @@
-<!-- Login Screen -->
-<div *ngIf="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-  <!-- Background Animation Elements -->
-  <div class="absolute inset-0 overflow-hidden">
-    <div class="absolute top-20 left-20 w-72 h-72 bg-[#E2012D] rounded-full mix-blend-screen filter blur-3xl opacity-10 animate-pulse"></div>
-    <div class="absolute bottom-20 right-20 w-72 h-72 bg-[#00D9FF] rounded-full mix-blend-screen filter blur-3xl opacity-10 animate-pulse" style="animation-delay: 2s;"></div>
+<!-- ==========================================
+     LOGIN SCREEN
+     ========================================== -->
+<div *ngIf="!isLoggedIn" class="login-page">
+  <div class="login-bg">
+    <div class="login-gradient"></div>
+    <div class="login-grid"></div>
+    <div class="login-particles">
+      <div class="particle" *ngFor="let i of [1,2,3,4,5,6,7,8]"></div>
+    </div>
   </div>
 
-  <div class="relative z-10">
-    <div class="bg-gradient-to-br from-[#1A1A1A] to-[#0F0F11] border border-[#E2012D]/30 rounded-2xl p-12 w-full max-w-md shadow-2xl backdrop-blur-xl">
-      <div class="text-center mb-8">
-        <div class="inline-block mb-4 p-3 bg-gradient-to-r from-[#E2012D] to-[#FF1744] rounded-lg">
-          <h1 class="text-4xl font-bold text-white tracking-wider">KJX</h1>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">
+          <span class="logo-text">D-P</span>
         </div>
-        <h2 class="text-2xl font-bold bg-gradient-to-r from-[#E2012D] to-[#FF1744] bg-clip-text text-transparent">Panel Admin</h2>
-        <p class="text-gray-400 text-sm mt-2 uppercase tracking-widest">Accès réservé à l'administration</p>
+        <h1 class="login-title">Panel Admin</h1>
+        <p class="login-subtitle">Accès réservé aux administrateurs</p>
       </div>
 
-      <form (ngSubmit)="login()" class="space-y-5">
-        <div class="relative">
-          <label class="block mb-2 text-xs uppercase tracking-widest font-semibold">Identifiant</label>
+      <form (ngSubmit)="login()" class="login-form">
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-icon">👤</span>
+            Identifiant
+          </label>
           <input 
             [(ngModel)]="credentials.username" 
             name="username"
             type="text" 
-            placeholder="admin" 
-            class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all">
+            placeholder="Entrez votre identifiant" 
+            class="form-input"
+            autocomplete="username"
+          />
         </div>
-        <div class="relative">
-          <label class="block mb-2 text-xs uppercase tracking-widest font-semibold">Mot de passe</label>
+
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-icon">🔒</span>
+            Mot de passe
+          </label>
           <input 
             [(ngModel)]="credentials.password" 
             name="password"
             type="password" 
             placeholder="••••••••" 
-            class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all">
+            class="form-input"
+            autocomplete="current-password"
+          />
         </div>
-        <button type="submit" class="w-full py-3 rounded-lg bg-gradient-to-r from-[#E2012D] to-[#FF1744] hover:from-[#FF1744] hover:to-[#E2012D] transition-all font-bold uppercase tracking-wider shadow-lg hover:shadow-[0_0_30px_rgba(226,1,45,0.5)]">Connexion</button>
+
+        <div class="login-error" *ngIf="loginError">
+          <span class="error-icon">⚠️</span>
+          {{ loginError }}
+        </div>
+
+        <button type="submit" class="btn-login" [disabled]="isLoggingIn">
+          <span *ngIf="!isLoggingIn">Connexion</span>
+          <span *ngIf="isLoggingIn" class="loading-spinner"></span>
+        </button>
       </form>
 
-      <div class="mt-6 pt-6 border-t border-gray-700">
-        <p class="text-center text-gray-500 text-xs">Demo: <span class="text-[#E2012D]">admin</span> / <span class="text-[#E2012D]">admin123</span></p>
+      <div class="login-footer">
+        <p class="demo-hint">Demo: <span class="highlight">admin</span> / <span class="highlight">admin123</span></p>
+      </div>
+    </div>
+
+    <div class="login-info">
+      <div class="info-card">
+        <span class="info-icon">🛡️</span>
+        <p>Connexion sécurisée</p>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">🚀</span>
+        <p>Interface premium</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Admin Content -->
-<div *ngIf="isLoggedIn" class="bg-black text-white font-sans">
-  <!-- Header -->
-  <header class="sticky top-0 z-40 backdrop-blur-md bg-black/80 border-b border-[#E2012D]/20">
-    <div class="max-w-full px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center space-x-6">
-        <div class="flex items-center space-x-2">
-          <div class="w-10 h-10 bg-gradient-to-r from-[#E2012D] to-[#FF1744] rounded-lg flex items-center justify-center font-bold">KJX</div>
-          <span class="hidden md:inline text-gray-400 text-sm">PANEL ADMIN</span>
-        </div>
-        <nav class="hidden lg:flex items-center space-x-8 text-xs uppercase tracking-wider text-gray-400 font-semibold">
-          <a href="#" class="hover:text-[#E2012D] transition-colors duration-300">Accueil</a>
-          <a href="#" class="hover:text-[#E2012D] transition-colors duration-300">Rosters</a>
-          <a href="#" class="hover:text-[#E2012D] transition-colors duration-300">Calendrier</a>
-          <a href="#" class="hover:text-[#E2012D] transition-colors duration-300">Boutique</a>
-        </nav>
+<!-- ==========================================
+     ADMIN DASHBOARD
+     ========================================== -->
+<div *ngIf="isLoggedIn" class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <span class="logo-icon">D-P</span>
+        <span class="logo-text" *ngIf="!sidebarCollapsed">ADMIN</span>
       </div>
-      <div class="flex items-center space-x-4">
-        <span class="hidden sm:inline text-sm text-gray-400">{{ adminName }}</span>
-        <button (click)="logout()" class="px-4 py-2 rounded-lg bg-[#1A1A1A] hover:bg-[#E2012D]/20 border border-[#E2012D]/50 text-[#E2012D] text-xs font-bold uppercase tracking-wider transition-all hover:border-[#E2012D]">Déconnexion</button>
-      </div>
+      <button class="btn-collapse" (click)="toggleSidebar()">
+        {{ sidebarCollapsed ? '→' : '←' }}
+      </button>
     </div>
-  </header>
 
-  <div class="flex min-h-[calc(100vh-73px)]">
-    <!-- Sidebar -->
-    <aside class="w-80 bg-gradient-to-b from-[#1A1A1A] to-[#0F0F11] border-r border-[#E2012D]/10 overflow-y-auto">
-      <div class="p-8 border-b border-[#E2012D]/10">
-        <h1 class="text-center text-3xl font-black">
-          <span class="bg-gradient-to-r from-[#E2012D] to-[#FF1744] bg-clip-text text-transparent">KJX</span>
-        </h1>
-        <p class="text-center text-gray-500 text-xs uppercase tracking-widest mt-2">Administration</p>
-      </div>
-      
-      <nav class="py-6 px-4">
-        <p class="px-4 py-2 text-xs uppercase tracking-widest text-gray-600 font-bold mb-4">Sections</p>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-label" *ngIf="!sidebarCollapsed">NAVIGATION</span>
         <button 
-          *ngFor="let section of ['weekly', 'events', 'matches', 'scrims', 'help']"
-          (click)="switchSection(section)"
-          class="nav-item w-full text-left px-5 py-4 hover:bg-[#2A2A2A] transition-all border-l-4 rounded-r-lg mb-2 flex items-center space-x-3"
-          [class.nav-item-active]="activeSection === section">
-          <i class="fas fa-circle text-xs" [ngClass]="{
-            'fa-calendar': section === 'weekly',
-            'fa-star': section === 'events',
-            'fa-trophy': section === 'matches',
-            'fa-users': section === 'scrims',
-            'fa-question': section === 'help'
-          }"></i>
-          <span>{{ getSectionLabel(section) }}</span>
-        </button>
-      </nav>
-
-      <div class="mt-8 pt-8 border-t border-[#E2012D]/10 px-4 space-y-3">
-        <a href="#" class="flex items-center space-x-3 px-5 py-3 rounded-lg hover:bg-[#2A2A2A] transition-all text-gray-400 hover:text-white">
-          <i class="fas fa-arrow-left text-sm"></i>
-          <span class="text-sm">Retour au site</span>
-        </a>
-        <button 
-          (click)="logout()"
-          class="w-full flex items-center space-x-3 px-5 py-3 rounded-lg bg-[#E2012D]/10 hover:bg-[#E2012D]/20 border border-[#E2012D]/30 text-[#E2012D] transition-all font-semibold">
-          <i class="fas fa-sign-out-alt text-sm"></i>
-          <span class="text-sm">Déconnexion</span>
+          *ngFor="let section of navSections"
+          (click)="switchSection(section.id)"
+          class="nav-item"
+          [class.active]="activeSection === section.id"
+        >
+          <span class="nav-icon">{{ section.icon }}</span>
+          <span class="nav-label" *ngIf="!sidebarCollapsed">{{ section.label }}</span>
+          <span class="nav-badge" *ngIf="section.badge && !sidebarCollapsed">{{ section.badge }}</span>
         </button>
       </div>
-    </aside>
+    </nav>
 
-    <!-- Main Content -->
-    <main class="flex-1 bg-black overflow-y-auto">
-      <div class="sticky top-0 z-30 px-8 py-6 bg-gradient-to-r from-black/90 to-[#0F0F11]/90 backdrop-blur border-b border-[#E2012D]/10 flex items-center justify-between">
-        <div>
-          <h2 class="text-3xl font-bold">{{ getSectionTitle() }}</h2>
-          <p class="text-gray-500 text-sm mt-1 uppercase tracking-wider">Gérez vos contenus</p>
+    <div class="sidebar-footer" *ngIf="!sidebarCollapsed">
+      <a routerLink="/" class="btn-back-site">
+        <span class="btn-icon">🏠</span>
+        Retour au site
+      </a>
+      <button class="btn-logout" (click)="logout()">
+        <span class="btn-icon">🚪</span>
+        Déconnexion
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <button class="btn-menu" (click)="toggleMobileMenu()">☰</button>
+    <span class="mobile-logo">D-PRESSION Admin</span>
+    <span class="mobile-user">{{ adminName }}</span>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay" [class.active]="showMobileMenu" (click)="toggleMobileMenu()"></div>
+  <div class="mobile-menu" [class.active]="showMobileMenu">
+    <button 
+      *ngFor="let section of navSections"
+      (click)="switchSection(section.id)"
+      class="mobile-nav-item"
+      [class.active]="activeSection === section.id"
+    >
+      <span class="nav-icon">{{ section.icon }}</span>
+      {{ section.label }}
+    </button>
+    <button class="mobile-nav-item logout" (click)="logout()">
+      <span class="nav-icon">🚪</span>
+      Déconnexion
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <!-- Top Bar -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">{{ getSectionTitle() }}</h1>
+        <p class="page-breadcrumb">Administration / {{ getSectionTitle() }}</p>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-time">
+          <span class="time-icon">🕐</span>
+          {{ currentTime | date:'HH:mm' }}
         </div>
-        <div class="text-right text-sm text-gray-400">
-          <p class="text-xs uppercase tracking-widest">Connecté en tant que</p>
-          <p class="text-lg font-bold text-[#E2012D]">{{ adminName }}</p>
+        <div class="topbar-user">
+          <div class="user-avatar">{{ adminName.charAt(0).toUpperCase() }}</div>
+          <div class="user-info">
+            <span class="user-greeting">{{ getGreeting() }}</span>
+            <span class="user-name">{{ adminName }}</span>
+          </div>
         </div>
       </div>
+    </header>
 
-      <div class="p-8 space-y-8">
-
-        <!-- PLANNING SECTION -->
-        <div *ngIf="activeSection === 'weekly'" class="space-y-8 animate-fadeInUp">
-          <div class="admin-panel">
-            <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-[#E2012D]/20">
-              <i class="fas fa-calendar text-2xl text-[#E2012D]"></i>
-              <h3 class="text-2xl font-bold">Planning hebdomadaire</h3>
+    <div class="admin-content">
+      <!-- ==========================================
+           DASHBOARD SECTION
+           ========================================== -->
+      <div *ngIf="activeSection === 'dashboard'" class="section-dashboard">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+              <span class="stat-value">{{ dashboardStats.totalEvents }}</span>
+              <span class="stat-label">Événements</span>
             </div>
-            <div id="schedule-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-              <div 
-                *ngFor="let day of days"
-                (click)="fillDay(day)"
-                class="p-4 rounded-lg border border-gray-700/50 bg-[#1A1A1A]/50 cursor-pointer hover:border-[#E2012D] hover:bg-[#1A1A1A] transition-all duration-300 hover:shadow-[0_0_20px_rgba(226,1,45,0.2)]">
-                <div class="flex items-center justify-between mb-3">
-                  <h4 class="font-bold text-[#E2012D] uppercase tracking-wider text-sm">{{ day }}</h4>
-                  <i class="fas fa-edit text-gray-500 group-hover:text-[#E2012D]"></i>
-                </div>
-                <p class="text-sm font-semibold">{{ schedule[day]?.start || '21:00' }} - {{ schedule[day]?.end || '00:00' }}</p>
-                <p class="text-gray-400 text-xs mt-2">{{ schedule[day]?.description || "Session d'entraînement" }}</p>
-              </div>
-            </div>
-
-            <div class="pt-6 border-t border-[#E2012D]/20">
-              <h4 class="text-lg font-bold mb-4 flex items-center space-x-2">
-                <span class="w-1 h-6 bg-gradient-to-b from-[#E2012D] to-transparent"></span>
-                <span>Modifier le planning</span>
-              </h4>
-              <form (ngSubmit)="saveScheduleForm()" class="space-y-5">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Jour</label>
-                    <select 
-                      [(ngModel)]="dayForm.day" 
-                      name="day"
-                      class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all">
-                      <option *ngFor="let day of days" [value]="day">{{ day }}</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Début</label>
-                    <input 
-                      [(ngModel)]="dayForm.start" 
-                      name="start"
-                      type="time" 
-                      class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all">
-                  </div>
-                  <div>
-                    <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Fin</label>
-                    <input 
-                      [(ngModel)]="dayForm.end" 
-                      name="end"
-                      type="time" 
-                      class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all">
-                  </div>
-                </div>
-                <div>
-                  <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Description</label>
-                  <textarea 
-                    [(ngModel)]="dayForm.description" 
-                    name="description"
-                    class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white h-20 resize-none focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                    placeholder="Détails de la session..."></textarea>
-                </div>
-                <button type="submit" class="px-6 py-3 rounded-lg bg-gradient-to-r from-[#E2012D] to-[#FF1744] hover:shadow-[0_0_20px_rgba(226,1,45,0.5)] transition-all font-bold uppercase tracking-wider text-sm">Sauvegarder</button>
-              </form>
-            </div>
+            <div class="stat-trend up">+12%</div>
           </div>
-
-          <div class="admin-panel">
-            <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-[#E2012D]/20">
-              <i class="fas fa-bullseye text-2xl text-[#E2012D]"></i>
-              <h3 class="text-2xl font-bold">Objectifs de la semaine</h3>
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-content">
+              <span class="stat-value">{{ dashboardStats.totalMatches }}</span>
+              <span class="stat-label">Matchs</span>
             </div>
-            <form (ngSubmit)="saveObjectives()" class="space-y-5">
-              <textarea 
-                [(ngModel)]="weeklyObjectives" 
-                name="objectives"
-                class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white h-24 resize-none focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                placeholder="Définissez les objectifs de la semaine..."></textarea>
-              <button type="submit" class="px-6 py-3 rounded-lg bg-gradient-to-r from-[#E2012D] to-[#FF1744] hover:shadow-[0_0_20px_rgba(226,1,45,0.5)] transition-all font-bold uppercase tracking-wider text-sm">Mettre à jour</button>
-            </form>
+            <div class="stat-trend up">+8%</div>
           </div>
-        </div>
-
-        <!-- EVENTS SECTION -->
-        <div *ngIf="activeSection === 'events'" class="space-y-8 animate-fadeInUp">
-          <div class="admin-panel">
-            <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-[#E2012D]/20">
-              <i class="fas fa-star text-2xl text-[#E2012D]"></i>
-              <h3 class="text-2xl font-bold">Créer un événement</h3>
+          <div class="stat-card highlight">
+            <div class="stat-icon">🎮</div>
+            <div class="stat-content">
+              <span class="stat-value">{{ dashboardStats.pendingScrims }}</span>
+              <span class="stat-label">Scrims en attente</span>
             </div>
-            <form (ngSubmit)="addEvent()" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Titre</label>
-                <input 
-                  [(ngModel)]="eventForm.title" 
-                  name="title"
-                  type="text" 
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-              </div>
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Type</label>
-                <select 
-                  [(ngModel)]="eventForm.type" 
-                  name="type"
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-                  <option value="tournament">🏆 Tournoi</option>
-                  <option value="scrim">🎮 Scrim</option>
-                  <option value="training">💪 Entraînement</option>
-                  <option value="meeting">👥 Réunion</option>
-                </select>
-              </div>
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Date</label>
-                <input 
-                  [(ngModel)]="eventForm.date" 
-                  name="date"
-                  type="date" 
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-              </div>
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Heure</label>
-                <input 
-                  [(ngModel)]="eventForm.time" 
-                  name="time"
-                  type="time" 
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-              </div>
-              <div class="md:col-span-2">
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Description</label>
-                <textarea 
-                  [(ngModel)]="eventForm.desc" 
-                  name="desc"
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white h-24 resize-none focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"></textarea>
-              </div>
-              <div class="md:col-span-2">
-                <button type="submit" class="px-8 py-3 rounded-lg bg-gradient-to-r from-[#E2012D] to-[#FF1744] hover:shadow-[0_0_20px_rgba(226,1,45,0.5)] transition-all font-bold uppercase tracking-wider text-sm">Créer l'événement</button>
-              </div>
-            </form>
+            <div class="stat-action" (click)="switchSection('scrims')">Voir →</div>
           </div>
-
-          <div class="admin-panel">
-            <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-[#E2012D]/20">
-              <i class="fas fa-list text-2xl text-[#E2012D]"></i>
-              <h3 class="text-2xl font-bold">Événements programmés</h3>
-              <span class="ml-auto px-3 py-1 rounded-full bg-[#E2012D]/20 text-[#E2012D] text-xs font-bold">{{ getSortedEvents().length }}</span>
+          <div class="stat-card">
+            <div class="stat-icon">💪</div>
+            <div class="stat-content">
+              <span class="stat-value">{{ dashboardStats.weeklyTraining }}</span>
+              <span class="stat-label">Jours planifiés</span>
             </div>
-            <div id="events-list" class="space-y-4">
-              <div *ngIf="getSortedEvents().length === 0" class="text-center py-12 text-gray-500">
-                <i class="fas fa-inbox text-4xl mb-4 block"></i>
-                Aucun événement programmé.
-              </div>
-              <div 
-                *ngFor="let event of getSortedEvents(); let i = index"
-                class="p-5 rounded-lg border border-gray-700/50 bg-[#1A1A1A]/50 hover:bg-[#1A1A1A] hover:border-[#E2012D]/30 transition-all group">
-                <div class="flex justify-between items-start mb-3">
-                  <div class="flex-1">
-                    <div class="flex items-center gap-3">
-                      <h4 class="font-bold text-lg">{{ event.title }}</h4>
-                      <span class="px-3 py-1 text-xs rounded-full bg-gradient-to-r from-[#E2012D]/20 to-[#FF1744]/20 border border-[#E2012D]/30 text-[#E2012D] font-bold uppercase tracking-wider">{{ labelEvent(event.type) }}</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-2">📅 {{ formatDate(event.date) }} à ⏰ {{ event.time || '--:--' }}</p>
-                    <p *ngIf="event.desc" class="text-gray-300 text-sm mt-3">{{ event.desc }}</p>
-                  </div>
-                  <button 
-                    (click)="deleteEvent(event.id)"
-                    type="button"
-                    class="text-gray-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100">
-                    <i class="fas fa-trash-alt text-lg"></i>
-                  </button>
-                </div>
-              </div>
+            <div class="stat-progress">
+              <div class="progress-bar" [style.width]="(dashboardStats.weeklyTraining / 7 * 100) + '%'"></div>
             </div>
           </div>
         </div>
 
-        <!-- MATCHES SECTION -->
-        <div *ngIf="activeSection === 'matches'" class="space-y-8 animate-fadeInUp">
-          <div class="admin-panel">
-            <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-[#E2012D]/20">
-              <i class="fas fa-trophy text-2xl text-[#E2012D]"></i>
-              <h3 class="text-2xl font-bold">Programmer un match</h3>
+        <!-- Quick Actions & Upcoming -->
+        <div class="dashboard-grid">
+          <!-- Quick Actions -->
+          <div class="admin-panel quick-actions">
+            <div class="panel-header">
+              <h3 class="panel-title">⚡ Actions Rapides</h3>
             </div>
-            <form (ngSubmit)="addMatch()" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Tournoi</label>
-                <input 
-                  [(ngModel)]="matchForm.tournament" 
-                  name="tournament"
-                  type="text" 
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-              </div>
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Format</label>
-                <select 
-                  [(ngModel)]="matchForm.format" 
-                  name="format"
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-                  <option value="Bo1">Bo1</option>
-                  <option value="Bo3">Bo3</option>
-                  <option value="Bo5">Bo5</option>
-                </select>
-              </div>
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Équipe 1</label>
-                <input 
-                  [(ngModel)]="matchForm.team1" 
-                  name="team1"
-                  type="text" 
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-              </div>
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Équipe 2</label>
-                <input 
-                  [(ngModel)]="matchForm.team2" 
-                  name="team2"
-                  type="text" 
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-              </div>
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Date</label>
-                <input 
-                  [(ngModel)]="matchForm.date" 
-                  name="date"
-                  type="date" 
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-              </div>
-              <div>
-                <label class="block mb-2 text-xs uppercase tracking-widest font-semibold text-gray-400">Heure</label>
-                <input 
-                  [(ngModel)]="matchForm.time" 
-                  name="time"
-                  type="time" 
-                  class="w-full px-4 py-3 bg-[#0F0F11] border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-[#E2012D] focus:ring-1 focus:ring-[#E2012D] transition-all"
-                  required>
-              </div>
-              <div class="md:col-span-2">
-                <button type="submit" class="px-8 py-3 rounded-lg bg-gradient-to-r from-[#E2012D] to-[#FF1744] hover:shadow-[0_0_20px_rgba(226,1,45,0.5)] transition-all font-bold uppercase tracking-wider text-sm">Ajouter le match</button>
-              </div>
-            </form>
-          </div>
-
-          <div class="admin-panel">
-            <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-[#E2012D]/20">
-              <i class="fas fa-calendar-check text-2xl text-[#E2012D]"></i>
-              <h3 class="text-2xl font-bold">Matchs programmés</h3>
-              <span class="ml-auto px-3 py-1 rounded-full bg-[#E2012D]/20 text-[#E2012D] text-xs font-bold">{{ getSortedMatches().length }}</span>
-            </div>
-            <div id="matches-list" class="space-y-4">
-              <div *ngIf="getSortedMatches().length === 0" class="text-center py-12 text-gray-500">
-                <i class="fas fa-inbox text-4xl mb-4 block"></i>
-                Aucun match programmé.
-              </div>
-              <div 
-                *ngFor="let match of getSortedMatches()"
-                class="p-5 rounded-lg border border-gray-700/50 bg-gradient-to-r from-[#1A1A1A]/50 to-[#0F0F11]/50 hover:border-[#E2012D]/30 transition-all group">
-                <div class="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 class="font-bold text-lg mb-1">{{ match.tournament }}</h4>
-                    <p class="text-gray-400 text-sm uppercase tracking-wider">🎯 {{ match.format }}</p>
-                  </div>
-                  <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      (click)="toggleMatch(match.id)"
-                      type="button"
-                      class="px-3 py-2 rounded bg-blue-500/20 text-blue-400 hover:bg-blue-500/40 transition-all text-sm"
-                      [title]="match.hidden ? 'Afficher' : 'Masquer'">
-                      <i [class]="'fas ' + (match.hidden ? 'fa-eye' : 'fa-eye-slash')"></i>
-                    </button>
-                    <button 
-                      (click)="deleteMatch(match.id)"
-                      type="button"
-                      class="px-3 py-2 rounded bg-red-500/20 text-red-400 hover:bg-red-500/40 transition-all text-sm">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between gap-4 bg-[#0F0F11]/50 p-4 rounded-lg">
-                  <div class="flex-1 text-center">
-                    <p class="font-bold text-lg">{{ match.team1 }}</p>
-                  </div>
-                  <div class="px-4 py-2 bg-gradient-to-r from-[#E2012D] to-[#FF1744] rounded font-bold uppercase tracking-wider text-xs">VS</div>
-                  <div class="flex-1 text-center">
-                    <p class="font-bold text-lg">{{ match.team2 }}</p>
-                  </div>
-                </div>
-                <div class="mt-4 pt-4 border-t border-gray-700/50 flex items-center justify-between">
-                  <p class="text-gray-300 text-sm">📅 {{ formatDate(match.date) }} | ⏰ {{ match.time || '--:--' }}</p>
-                  <p *ngIf="match.hidden" class="text-yellow-400 text-xs font-bold uppercase tracking-wider">👁️ Masqué</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SCRIMS SECTION -->
-        <div *ngIf="activeSection === 'scrims'" class="space-y-8 animate-fadeInUp">
-          <div class="admin-panel">
-            <div class="flex items-center justify-between mb-6 pb-6 border-b border-[#E2012D]/20">
-              <div class="flex items-center space-x-3">
-                <i class="fas fa-users text-2xl text-[#E2012D]"></i>
-                <h3 class="text-2xl font-bold">Demandes de scrims</h3>
-                <span class="px-3 py-1 rounded-full bg-[#E2012D]/20 text-[#E2012D] text-xs font-bold">{{ getFilteredScrims().length }}</span>
-              </div>
-            </div>
-            <div class="flex items-center gap-2 mb-6 flex-wrap">
-              <p class="text-sm text-gray-400 uppercase tracking-wider font-semibold">Filtrer:</p>
-              <button 
-                *ngFor="let filter of ['all', 'pending', 'accepted', 'rejected']"
-                (click)="selectedFilter = filter"
-                class="px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all"
-                [ngClass]="selectedFilter === filter 
-                  ? 'bg-gradient-to-r from-[#E2012D] to-[#FF1744] text-white shadow-[0_0_15px_rgba(226,1,45,0.4)]' 
-                  : 'bg-[#1A1A1A] border border-gray-700/50 text-gray-400 hover:border-gray-600'">
-                {{ filter === 'all' ? 'Toutes' : filter === 'pending' ? 'En attente' : filter === 'accepted' ? 'Acceptées' : 'Refusées' }}
+            <div class="actions-grid">
+              <button class="action-btn" (click)="switchSection('events')">
+                <span class="action-icon">➕</span>
+                <span class="action-text">Nouvel événement</span>
+              </button>
+              <button class="action-btn" (click)="switchSection('matches')">
+                <span class="action-icon">🏆</span>
+                <span class="action-text">Programmer match</span>
+              </button>
+              <button class="action-btn" (click)="switchSection('weekly')">
+                <span class="action-icon">📅</span>
+                <span class="action-text">Modifier planning</span>
+              </button>
+              <button class="action-btn" (click)="switchSection('scrims')">
+                <span class="action-icon">🎮</span>
+                <span class="action-text">Gérer scrims</span>
               </button>
             </div>
-            <div id="scrim-list" class="space-y-4">
-              <div *ngIf="getFilteredScrims().length === 0" class="text-center py-12 text-gray-500">
-                <i class="fas fa-inbox text-4xl mb-4 block"></i>
-                Aucune demande pour ce filtre.
+          </div>
+
+          <!-- Upcoming Events -->
+          <div class="admin-panel upcoming-events">
+            <div class="panel-header">
+              <h3 class="panel-title">📆 Prochains Événements</h3>
+              <button class="btn-see-all" (click)="switchSection('events')">Voir tout</button>
+            </div>
+            <div class="events-list">
+              <div *ngIf="getUpcomingEvents().length === 0" class="empty-state-small">
+                <span class="empty-icon">📭</span>
+                <p>Aucun événement à venir</p>
               </div>
-              <div 
-                *ngFor="let req of getFilteredScrims()"
-                class="p-5 rounded-lg border border-gray-700/50 bg-[#1A1A1A]/50 hover:border-[#E2012D]/30 transition-all group">
-                <div class="flex justify-between items-start mb-3">
-                  <div class="flex-1">
-                    <h4 class="font-bold text-lg">{{ req.teamName }}</h4>
-                    <p class="text-gray-400 text-sm">📧 {{ req.teamEmail }}</p>
-                  </div>
-                  <span 
-                    class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
-                    [ngClass]="badgeClass(req.status)">
-                    {{ labelStatus(req.status) }}
-                  </span>
+              <div *ngFor="let event of getUpcomingEvents()" class="event-item">
+                <div class="event-icon">{{ getEventIcon(event.type) }}</div>
+                <div class="event-details">
+                  <span class="event-title">{{ event.title }}</span>
+                  <span class="event-date">{{ formatDate(event.date) }} • {{ formatTime(event.time) }}</span>
                 </div>
-                <div class="space-y-2 mb-4 text-sm">
-                  <p><span class="text-gray-400">Niveau:</span> <span class="font-semibold">{{ req.level || 'N/C' }}</span></p>
-                  <p><span class="text-gray-400">Disponibilités:</span> <span class="font-semibold">{{ req.preferredDates || 'Non renseigné' }}</span></p>
-                  <p *ngIf="req.details" class="text-gray-400 mt-2">{{ req.details }}</p>
+                <span class="event-relative" *ngIf="getRelativeDate(event.date)">{{ getRelativeDate(event.date) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upcoming Matches -->
+          <div class="admin-panel upcoming-matches">
+            <div class="panel-header">
+              <h3 class="panel-title">🏆 Prochains Matchs</h3>
+              <button class="btn-see-all" (click)="switchSection('matches')">Voir tout</button>
+            </div>
+            <div class="matches-list">
+              <div *ngIf="getUpcomingMatches().length === 0" class="empty-state-small">
+                <span class="empty-icon">🎯</span>
+                <p>Aucun match programmé</p>
+              </div>
+              <div *ngFor="let match of getUpcomingMatches()" class="match-item">
+                <div class="match-teams">
+                  <span class="team team1">{{ match.team1 }}</span>
+                  <span class="vs">VS</span>
+                  <span class="team team2">{{ match.team2 }}</span>
                 </div>
-                <div class="flex gap-2">
-                  <button 
-                    (click)="updateScrim(req.id, 'accepted')"
-                    [disabled]="req.status !== 'pending'"
-                    class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-green-500 hover:shadow-[0_0_15px_rgba(0,217,142,0.4)] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold uppercase tracking-wider transition-all">
-                    ✓ Accepter
-                  </button>
-                  <button 
-                    (click)="updateScrim(req.id, 'rejected')"
-                    [disabled]="req.status !== 'pending'"
-                    class="px-4 py-2 rounded-lg bg-[#1A1A1A] border border-red-500/50 hover:bg-red-500/20 disabled:opacity-40 disabled:cursor-not-allowed text-red-400 text-sm font-bold uppercase tracking-wider transition-all">
-                    ✕ Refuser
-                  </button>
+                <div class="match-info">
+                  <span class="match-tournament">{{ match.tournament }}</span>
+                  <span class="match-format">{{ match.format }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- HELP SECTION -->
-        <div *ngIf="activeSection === 'help'" class="space-y-8 animate-fadeInUp">
-          <div class="admin-panel">
-            <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-[#E2012D]/20">
-              <i class="fas fa-book text-2xl text-[#E2012D]"></i>
-              <h3 class="text-2xl font-bold">Guide d'utilisation</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="p-5 rounded-lg bg-[#1A1A1A]/50 border border-gray-700/50">
-                <h4 class="flex items-center space-x-2 font-bold mb-3 text-[#E2012D]">
-                  <i class="fas fa-lock"></i>
-                  <span>Authentification</span>
-                </h4>
-                <ul class="space-y-2 text-sm text-gray-300">
-                  <li>✓ Username: <span class="text-[#E2012D] font-semibold">admin</span></li>
-                  <li>✓ Password: <span class="text-[#E2012D] font-semibold">admin123</span></li>
-                  <li>✓ Tous les mots de passe seront modifiés ultérieurement</li>
-                </ul>
-              </div>
-              <div class="p-5 rounded-lg bg-[#1A1A1A]/50 border border-gray-700/50">
-                <h4 class="flex items-center space-x-2 font-bold mb-3 text-[#E2012D]">
-                  <i class="fas fa-database"></i>
-                  <span>Stockage des données</span>
-                </h4>
-                <ul class="space-y-2 text-sm text-gray-300">
-                  <li>✓ Données stockées en localStorage</li>
-                  <li>✓ Persistantes dans le navigateur</li>
-                  <li>✓ Non synchronisées avec le serveur</li>
-                </ul>
-              </div>
-              <div class="p-5 rounded-lg bg-[#1A1A1A]/50 border border-gray-700/50">
-                <h4 class="flex items-center space-x-2 font-bold mb-3 text-[#E2012D]">
-                  <i class="fas fa-trash"></i>
-                  <span>Suppression d'éléments</span>
-                </h4>
-                <ul class="space-y-2 text-sm text-gray-300">
-                  <li>✓ Cliquez sur l'icône corbeille</li>
-                  <li>✓ Les éléments sont supprimés immédiatement</li>
-                  <li>✓ La suppression est définitive</li>
-                </ul>
-              </div>
-              <div class="p-5 rounded-lg bg-[#1A1A1A]/50 border border-gray-700/50">
-                <h4 class="flex items-center space-x-2 font-bold mb-3 text-[#E2012D]">
-                  <i class="fas fa-eye"></i>
-                  <span>Visibilité des matchs</span>
-                </h4>
-                <ul class="space-y-2 text-sm text-gray-300">
-                  <li>✓ Cliquez sur l'icône oeil</li>
-                  <li>✓ Masquez/affichez les matchs publiquement</li>
-                  <li>✓ Utile pour les matchs secrets</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="admin-panel">
-            <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-[#E2012D]/20">
-              <i class="fas fa-info-circle text-2xl text-[#E2012D]"></i>
-              <h3 class="text-2xl font-bold">Informations système</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div class="p-4 rounded-lg bg-[#1A1A1A]/50 border border-[#E2012D]/20">
-                <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Application</p>
-                <p class="font-bold text-lg">D-pression Admin</p>
-                <p class="text-gray-500 text-xs mt-1">v1.0.0</p>
-              </div>
-              <div class="p-4 rounded-lg bg-[#1A1A1A]/50 border border-[#E2012D]/20">
-                <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Framework</p>
-                <p class="font-bold text-lg">Angular 21</p>
-                <p class="text-gray-500 text-xs mt-1">Standalone</p>
-              </div>
-              <div class="p-4 rounded-lg bg-[#1A1A1A]/50 border border-[#E2012D]/20">
-                <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Backend</p>
-                <p class="font-bold text-lg">Spring Boot</p>
-                <p class="text-gray-500 text-xs mt-1">http://localhost:8080</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
-    </main>
-  </div>
+
+      <!-- ==========================================
+           PLANNING SECTION
+           ========================================== -->
+      <div *ngIf="activeSection === 'weekly'" class="section-planning">
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">📅 Planning Hebdomadaire</h3>
+            <span class="panel-badge">{{ Object.keys(schedule).length }} jours configurés</span>
+          </div>
+          
+          <div class="schedule-grid">
+            <div 
+              *ngFor="let day of days"
+              class="schedule-card"
+              [class.selected]="selectedDay === day"
+              [class.configured]="schedule[day]"
+              (click)="fillDay(day)"
+            >
+              <div class="schedule-day">{{ day }}</div>
+              <div class="schedule-time" *ngIf="schedule[day]">
+                {{ schedule[day].start }} - {{ schedule[day].end }}
+              </div>
+              <div class="schedule-time empty" *ngIf="!schedule[day]">Non configuré</div>
+              <div class="schedule-desc" *ngIf="schedule[day]">{{ schedule[day].description }}</div>
+            </div>
+          </div>
+
+          <div class="schedule-form">
+            <h4 class="form-section-title">✏️ Modifier le planning</h4>
+            <form (ngSubmit)="saveScheduleForm()" class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Jour</label>
+                <select [(ngModel)]="dayForm.day" name="day" class="form-select">
+                  <option *ngFor="let day of days" [value]="day">{{ day }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Début</label>
+                <input [(ngModel)]="dayForm.start" name="start" type="time" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fin</label>
+                <input [(ngModel)]="dayForm.end" name="end" type="time" class="form-input" />
+              </div>
+              <div class="form-group full-width">
+                <label class="form-label">Description</label>
+                <textarea [(ngModel)]="dayForm.description" name="description" class="form-textarea" placeholder="Détails de la session..."></textarea>
+              </div>
+              <div class="form-actions full-width">
+                <button type="submit" class="btn-primary">💾 Sauvegarder</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">🎯 Objectifs de la Semaine</h3>
+          </div>
+          <form (ngSubmit)="saveObjectives()">
+            <textarea 
+              [(ngModel)]="weeklyObjectives" 
+              name="objectives" 
+              class="form-textarea large"
+              placeholder="Définissez les objectifs de la semaine..."></textarea>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">💾 Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           EVENTS SECTION
+           ========================================== -->
+      <div *ngIf="activeSection === 'events'" class="section-events">
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">➕ Créer un Événement</h3>
+          </div>
+          <form (ngSubmit)="addEvent()" class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Titre *</label>
+              <input [(ngModel)]="eventForm.title" name="title" type="text" class="form-input" placeholder="Nom de l'événement" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select [(ngModel)]="eventForm.type" name="type" class="form-select">
+                <option value="tournament">🏆 Tournoi</option>
+                <option value="scrim">🎮 Scrim</option>
+                <option value="training">💪 Entraînement</option>
+                <option value="meeting">👥 Réunion</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date *</label>
+              <input [(ngModel)]="eventForm.date" name="date" type="date" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Heure</label>
+              <input [(ngModel)]="eventForm.time" name="time" type="time" class="form-input" />
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Description</label>
+              <textarea [(ngModel)]="eventForm.desc" name="desc" class="form-textarea" placeholder="Détails de l'événement..."></textarea>
+            </div>
+            <div class="form-actions full-width">
+              <button type="submit" class="btn-primary">➕ Créer l'événement</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">📋 Événements Programmés</h3>
+            <span class="panel-badge">{{ getSortedEvents().length }} événements</span>
+          </div>
+          <div class="events-table">
+            <div *ngIf="getSortedEvents().length === 0" class="empty-state">
+              <span class="empty-icon">📭</span>
+              <h4>Aucun événement</h4>
+              <p>Créez votre premier événement ci-dessus</p>
+            </div>
+            <div *ngFor="let event of getSortedEvents()" class="event-row">
+              <div class="event-type-icon">{{ getEventIcon(event.type) }}</div>
+              <div class="event-info">
+                <span class="event-title">{{ event.title }}</span>
+                <span class="event-type-badge">{{ labelEvent(event.type) }}</span>
+              </div>
+              <div class="event-datetime">
+                <span class="event-date">{{ formatDate(event.date) }}</span>
+                <span class="event-time">{{ formatTime(event.time) }}</span>
+              </div>
+              <div class="event-desc" *ngIf="event.desc">{{ event.desc }}</div>
+              <div class="event-actions">
+                <button class="btn-icon-action delete" (click)="deleteEvent(event.id)" title="Supprimer">🗑️</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           MATCHES SECTION
+           ========================================== -->
+      <div *ngIf="activeSection === 'matches'" class="section-matches">
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">➕ Programmer un Match</h3>
+          </div>
+          <form (ngSubmit)="addMatch()" class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Tournoi / Compétition *</label>
+              <input [(ngModel)]="matchForm.tournament" name="tournament" type="text" class="form-input" placeholder="Nom du tournoi" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Format</label>
+              <select [(ngModel)]="matchForm.format" name="format" class="form-select">
+                <option value="Bo1">Bo1</option>
+                <option value="Bo3">Bo3</option>
+                <option value="Bo5">Bo5</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Équipe 1 *</label>
+              <input [(ngModel)]="matchForm.team1" name="team1" type="text" class="form-input" placeholder="Notre équipe" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Équipe 2 *</label>
+              <input [(ngModel)]="matchForm.team2" name="team2" type="text" class="form-input" placeholder="Adversaire" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input [(ngModel)]="matchForm.date" name="date" type="date" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Heure</label>
+              <input [(ngModel)]="matchForm.time" name="time" type="time" class="form-input" />
+            </div>
+            <div class="form-actions full-width">
+              <button type="submit" class="btn-primary">🏆 Ajouter le match</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">📋 Matchs Programmés</h3>
+            <span class="panel-badge">{{ getSortedMatches().length }} matchs</span>
+          </div>
+          <div class="matches-table">
+            <div *ngIf="getSortedMatches().length === 0" class="empty-state">
+              <span class="empty-icon">🏆</span>
+              <h4>Aucun match</h4>
+              <p>Programmez votre premier match ci-dessus</p>
+            </div>
+            <div *ngFor="let match of getSortedMatches()" class="match-row" [class.hidden-match]="match.hidden">
+              <div class="match-tournament">
+                <span class="tournament-name">{{ match.tournament }}</span>
+                <span class="match-format-badge">{{ match.format }}</span>
+              </div>
+              <div class="match-versus">
+                <span class="team-name">{{ match.team1 }}</span>
+                <span class="vs-badge">VS</span>
+                <span class="team-name">{{ match.team2 }}</span>
+              </div>
+              <div class="match-datetime">
+                <span class="match-date">{{ formatDate(match.date) }}</span>
+                <span class="match-time">{{ formatTime(match.time) }}</span>
+              </div>
+              <div class="match-status" *ngIf="match.hidden">
+                <span class="status-hidden">👁️ Masqué</span>
+              </div>
+              <div class="match-actions">
+                <button class="btn-icon-action" (click)="toggleMatch(match.id)" [title]="match.hidden ? 'Afficher' : 'Masquer'">
+                  {{ match.hidden ? '👁️' : '🙈' }}
+                </button>
+                <button class="btn-icon-action delete" (click)="deleteMatch(match.id)" title="Supprimer">🗑️</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SCRIMS SECTION
+           ========================================== -->
+      <div *ngIf="activeSection === 'scrims'" class="section-scrims">
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">🎮 Demandes de Scrims</h3>
+            <span class="panel-badge">{{ getFilteredScrims().length }} demandes</span>
+          </div>
+          
+          <div class="filter-tabs">
+            <button 
+              *ngFor="let filter of ['all', 'pending', 'accepted', 'rejected']"
+              (click)="selectedFilter = filter"
+              class="filter-tab"
+              [class.active]="selectedFilter === filter"
+            >
+              {{ filter === 'all' ? 'Toutes' : filter === 'pending' ? '⏳ En attente' : filter === 'accepted' ? '✅ Acceptées' : '❌ Refusées' }}
+            </button>
+          </div>
+
+          <div class="scrims-list">
+            <div *ngIf="getFilteredScrims().length === 0" class="empty-state">
+              <span class="empty-icon">🎮</span>
+              <h4>Aucune demande</h4>
+              <p>Les demandes de scrims apparaîtront ici</p>
+            </div>
+            <div *ngFor="let req of getFilteredScrims()" class="scrim-card">
+              <div class="scrim-header">
+                <div class="scrim-team">
+                  <span class="team-avatar">{{ req.teamName.charAt(0) }}</span>
+                  <div class="team-info">
+                    <span class="team-name">{{ req.teamName }}</span>
+                    <span class="team-email">{{ req.teamEmail }}</span>
+                  </div>
+                </div>
+                <span class="scrim-status" [class]="badgeClass(req.status)">{{ labelStatus(req.status) }}</span>
+              </div>
+              <div class="scrim-details">
+                <div class="detail-item">
+                  <span class="detail-label">Niveau</span>
+                  <span class="detail-value">{{ req.level }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Disponibilités</span>
+                  <span class="detail-value">{{ req.preferredDates || 'Non précisé' }}</span>
+                </div>
+              </div>
+              <p class="scrim-message" *ngIf="req.details">{{ req.details }}</p>
+              <div class="scrim-actions" *ngIf="req.status === 'pending'">
+                <button class="btn-accept" (click)="updateScrim(req.id, 'accepted')">✅ Accepter</button>
+                <button class="btn-reject" (click)="updateScrim(req.id, 'rejected')">❌ Refuser</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           ANALYTICS SECTION
+           ========================================== -->
+      <div *ngIf="activeSection === 'analytics'" class="section-analytics">
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">📈 Analytiques</h3>
+          </div>
+          <div class="analytics-placeholder">
+            <span class="placeholder-icon">📊</span>
+            <h4>Analytiques à venir</h4>
+            <p>Cette section affichera les statistiques détaillées de votre équipe.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SETTINGS SECTION
+           ========================================== -->
+      <div *ngIf="activeSection === 'settings'" class="section-settings">
+        <div class="admin-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">⚙️ Paramètres</h3>
+          </div>
+          <div class="settings-grid">
+            <div class="setting-card">
+              <div class="setting-icon">🔐</div>
+              <div class="setting-content">
+                <h4>Sécurité</h4>
+                <p>Gérer les accès</p>
+              </div>
+            </div>
+            <div class="setting-card">
+              <div class="setting-icon">🎨</div>
+              <div class="setting-content">
+                <h4>Apparence</h4>
+                <p>Personnaliser</p>
+              </div>
+            </div>
+            <div class="setting-card">
+              <div class="setting-icon">🔔</div>
+              <div class="setting-content">
+                <h4>Notifications</h4>
+                <p>Alertes</p>
+              </div>
+            </div>
+            <div class="setting-card">
+              <div class="setting-icon">💾</div>
+              <div class="setting-content">
+                <h4>Données</h4>
+                <p>Exporter</p>
+              </div>
+            </div>
+          </div>
+          <div class="system-info">
+            <h4>ℹ️ Système</h4>
+            <div class="info-grid">
+              <div class="info-item"><span>App</span><span>D-PRESSION Admin v1.0</span></div>
+              <div class="info-item"><span>Framework</span><span>Angular 21</span></div>
+              <div class="info-item"><span>Backend</span><span>Spring Boot 3.2</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-notification" [class.show]="showToastNotification" [class]="'toast-' + toastType">
+  <span class="toast-icon">{{ toastType === 'success' ? '✅' : toastType === 'error' ? '❌' : '⚠️' }}</span>
+  <span class="toast-message">{{ toastMessage }}</span>
 </div>

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = 'http://localhost:8081/api';
 
   constructor(private http: HttpClient) { }
 
@@ -37,7 +37,7 @@ export class ApiService {
 
   // Admin - Login (deprecated - use AuthService instead)
   adminLogin(credentials: any): Observable<any> {
-    return this.http.post(`http://localhost:8080/auth/login`, credentials);
+    return this.http.post(`http://localhost:8081/auth/login`, credentials);
   }
 
   // Admin - Get Scrim Requests

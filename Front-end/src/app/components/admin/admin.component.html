@@ -637,15 +637,15 @@
             <span class="mini-stat-label">Total</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ users.filter(u => u.isActive).length }}</span>
+            <span class="mini-stat-value">{{ getActiveUsersCount() }}</span>
             <span class="mini-stat-label">Actifs</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ users.filter(u => u.role === 'ADMIN').length }}</span>
+            <span class="mini-stat-value">{{ getAdminUsersCount() }}</span>
             <span class="mini-stat-label">Admins</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ users.filter(u => !u.isActive).length }}</span>
+            <span class="mini-stat-value">{{ getInactiveUsersCount() }}</span>
             <span class="mini-stat-label">Inactifs</span>
           </div>
         </div>
@@ -753,15 +753,15 @@
             <span class="mini-stat-label">Total produits</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ products.filter(p => p.stock > 0).length }}</span>
+            <span class="mini-stat-value">{{ getInStockProductsCount() }}</span>
             <span class="mini-stat-label">En stock</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ products.filter(p => p.isFeatured).length }}</span>
+            <span class="mini-stat-value">{{ getFeaturedProductsCount() }}</span>
             <span class="mini-stat-label">Vedettes</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ products.filter(p => p.stock < 10).length }}</span>
+            <span class="mini-stat-value">{{ getLowStockProductsCount() }}</span>
             <span class="mini-stat-label">Stock faible</span>
           </div>
         </div>
@@ -846,11 +846,11 @@
             <span class="mini-stat-label">Total</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ memberships.filter(m => m.isActive).length }}</span>
+            <span class="mini-stat-value">{{ getActiveMembershipsCount() }}</span>
             <span class="mini-stat-label">Actifs</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ formatCurrency(memberships.reduce((sum, m) => sum + m.price, 0)) }}</span>
+            <span class="mini-stat-value">{{ formatCurrency(getTotalMembershipsRevenue()) }}</span>
             <span class="mini-stat-label">Valeur totale</span>
           </div>
         </div>
@@ -923,15 +923,15 @@
             <span class="mini-stat-label">Total articles</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ posts.filter(p => p.isPublished).length }}</span>
+            <span class="mini-stat-value">{{ getPublishedPostsCount() }}</span>
             <span class="mini-stat-label">Publiés</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ posts.filter(p => !p.isPublished).length }}</span>
+            <span class="mini-stat-value">{{ getDraftPostsCount() }}</span>
             <span class="mini-stat-label">Brouillons</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ posts.reduce((sum, p) => sum + (p.viewCount || 0), 0) }}</span>
+            <span class="mini-stat-value">{{ getTotalPostViews() }}</span>
             <span class="mini-stat-label">Vues totales</span>
           </div>
         </div>
@@ -1016,15 +1016,15 @@
             <span class="mini-stat-label">Équipes</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ teams.filter(t => t.game === 'lol').length }}</span>
+            <span class="mini-stat-value">{{ getLolTeamsCount() }}</span>
             <span class="mini-stat-label">League of Legends</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ teams.filter(t => t.game === 'valorant').length }}</span>
+            <span class="mini-stat-value">{{ getValorantTeamsCount() }}</span>
             <span class="mini-stat-label">Valorant</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ teams.reduce((sum, t) => sum + (t.members?.length || 0), 0) }}</span>
+            <span class="mini-stat-value">{{ getTotalTeamMembers() }}</span>
             <span class="mini-stat-label">Joueurs total</span>
           </div>
         </div>
@@ -1225,11 +1225,11 @@
             <span class="mini-stat-label">À venir</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ events.filter(e => e.eventType === 'match').length }}</span>
+            <span class="mini-stat-value">{{ getMatchEventsCount() }}</span>
             <span class="mini-stat-label">Matchs</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ events.filter(e => e.eventType === 'training').length }}</span>
+            <span class="mini-stat-value">{{ getTrainingEventsCount() }}</span>
             <span class="mini-stat-label">Entraînements</span>
           </div>
         </div>
@@ -1314,11 +1314,11 @@
             <span class="mini-stat-label">À venir</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ matches.filter(m => !m.hidden).length }}</span>
+            <span class="mini-stat-value">{{ getVisibleMatchesCount() }}</span>
             <span class="mini-stat-label">Visibles</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ matches.filter(m => m.hidden).length }}</span>
+            <span class="mini-stat-value">{{ getHiddenMatchesCount() }}</span>
             <span class="mini-stat-label">Masqués</span>
           </div>
         </div>
@@ -1399,15 +1399,15 @@
             <span class="mini-stat-label">Total demandes</span>
           </div>
           <div class="mini-stat highlight">
-            <span class="mini-stat-value">{{ scrims.filter(s => s.status === 'pending').length }}</span>
+            <span class="mini-stat-value">{{ getPendingScrimsCount() }}</span>
             <span class="mini-stat-label">En attente</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ scrims.filter(s => s.status === 'accepted').length }}</span>
+            <span class="mini-stat-value">{{ getAcceptedScrimsCount() }}</span>
             <span class="mini-stat-label">Acceptées</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">{{ scrims.filter(s => s.status === 'rejected').length }}</span>
+            <span class="mini-stat-value">{{ getRejectedScrimsCount() }}</span>
             <span class="mini-stat-label">Refusées</span>
           </div>
         </div>

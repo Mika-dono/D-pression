@@ -829,6 +829,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
     });
   }
 
+  toggleMatch(id: number): void {
+    const match = this.matches.find(m => m.id === id);
+    if (match) {
+      this.toggleMatchVisibility(match);
+    }
+  }
+
   deleteMatch(id: number): void {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce match ?')) return;
     this.apiService.deleteMatch(id).subscribe({
@@ -877,6 +884,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
       },
       error: () => this.showToast('Erreur lors de la suppression', 'error')
     });
+  }
+
+  updateScrim(id: number, status: string): void {
+    const scrim = this.scrims.find(s => s.id === id);
+    if (scrim) {
+      this.updateScrimStatus(scrim, status.toUpperCase());
+    }
   }
 
   getFilteredScrims(): ScrimRequest[] {
@@ -930,6 +944,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
       },
       error: () => this.showToast('Erreur lors de la mise à jour', 'error')
     });
+  }
+
+  clearDay(day: string): void {
+    if (!confirm('Êtes-vous sûr de vouloir effacer ce jour ?')) return;
+    delete this.schedule[day];
+    this.fillDay(day);
+    this.showToast('Jour effacé', 'warning');
   }
 
   loadObjectives(): void {
@@ -996,6 +1017,11 @@ export class AdminComponent implements OnInit, AfterViewInit {
     const d = new Date(`${date}T00:00:00`);
     if (Number.isNaN(d.getTime())) return 'Non défini';
     return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  formatTime(time: string): string {
+    if (!time) return '';
+    return time.substring(0, 5);
   }
 
   formatCurrency(amount: number): string {
@@ -1097,5 +1123,90 @@ export class AdminComponent implements OnInit, AfterViewInit {
   getUpcomingMatches(): Match[] {
     const now = new Date();
     return this.getSortedMatches().filter(m => !m.hidden && new Date(`${m.date}T${m.time || '00:00'}`) >= now).slice(0, 3);
+  }
+
+  // =============== STATS HELPERS (for template) ===============
+  getActiveUsersCount(): number {
+    return this.users.filter(u => u.isActive).length;
+  }
+
+  getAdminUsersCount(): number {
+    return this.users.filter(u => u.role === 'ADMIN').length;
+  }
+
+  getInactiveUsersCount(): number {
+    return this.users.filter(u => !u.isActive).length;
+  }
+
+  getInStockProductsCount(): number {
+    return this.products.filter(p => p.stock > 0).length;
+  }
+
+  getFeaturedProductsCount(): number {
+    return this.products.filter(p => p.isFeatured).length;
+  }
+
+  getLowStockProductsCount(): number {
+    return this.products.filter(p => p.stock < 10).length;
+  }
+
+  getActiveMembershipsCount(): number {
+    return this.memberships.filter(m => m.isActive).length;
+  }
+
+  getTotalMembershipsRevenue(): number {
+    return this.memberships.reduce((sum, m) => sum + m.price, 0);
+  }
+
+  getPublishedPostsCount(): number {
+    return this.posts.filter(p => p.isPublished).length;
+  }
+
+  getDraftPostsCount(): number {
+    return this.posts.filter(p => !p.isPublished).length;
+  }
+
+  getTotalPostViews(): number {
+    return this.posts.reduce((sum, p) => sum + (p.viewCount || 0), 0);
+  }
+
+  getLolTeamsCount(): number {
+    return this.teams.filter(t => t.game === 'lol').length;
+  }
+
+  getValorantTeamsCount(): number {
+    return this.teams.filter(t => t.game === 'valorant').length;
+  }
+
+  getTotalTeamMembers(): number {
+    return this.teams.reduce((sum, t) => sum + (t.members?.length || 0), 0);
+  }
+
+  getMatchEventsCount(): number {
+    return this.events.filter(e => e.eventType === 'match').length;
+  }
+
+  getTrainingEventsCount(): number {
+    return this.events.filter(e => e.eventType === 'training').length;
+  }
+
+  getVisibleMatchesCount(): number {
+    return this.matches.filter(m => !m.hidden).length;
+  }
+
+  getHiddenMatchesCount(): number {
+    return this.matches.filter(m => m.hidden).length;
+  }
+
+  getPendingScrimsCount(): number {
+    return this.scrims.filter(s => s.status === 'pending' || s.status === 'PENDING').length;
+  }
+
+  getAcceptedScrimsCount(): number {
+    return this.scrims.filter(s => s.status === 'accepted' || s.status === 'ACCEPTED' || s.status === 'APPROVED').length;
+  }
+
+  getRejectedScrimsCount(): number {
+    return this.scrims.filter(s => s.status === 'rejected' || s.status === 'REJECTED').length;
   }
 }

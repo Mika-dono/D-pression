@@ -394,7 +394,7 @@
   transition: width var(--transition-smooth);
   position: fixed;
   left: 0;
-  top: 0;
+  top: 70px; /* Positionner SOUS la nav bar principale (70px de hauteur) */
   bottom: 0;
   z-index: 100;
 }
@@ -439,20 +439,51 @@
 }
 
 .btn-collapse {
-  width: 32px;
-  height: 32px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  color: var(--dp-text-muted);
-  font-size: 0.875rem;
+  width: 40px;
+  height: 40px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 12px;
+  color: var(--dp-white);
+  font-size: 1.2rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: var(--transition-fast);
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(226, 1, 45, 0.4);
+  flex-shrink: 0;
 }
 
 .btn-collapse:hover {
-  background: rgba(226, 1, 45, 0.2);
-  color: var(--dp-white);
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(226, 1, 45, 0.6);
+}
+
+.btn-collapse:active {
+  transform: scale(0.95);
+}
+
+.btn-collapse .collapse-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Quand la sidebar est collapsed, le bouton est centré */
+.admin-sidebar.collapsed .sidebar-header {
+  justify-content: center;
+  padding: 1rem;
+}
+
+.admin-sidebar.collapsed .btn-collapse {
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 6px 25px rgba(226, 1, 45, 0.5);
 }
 
 .sidebar-nav {
@@ -683,6 +714,8 @@
 .admin-main {
   flex: 1;
   margin-left: 280px;
+  margin-top: 70px; /* Espace pour la nav bar principale (70px de hauteur) */
+  min-height: calc(100vh - 70px);
   transition: margin-left var(--transition-smooth);
 }
 
@@ -700,7 +733,7 @@
   background: var(--dp-dark);
   border-bottom: 1px solid rgba(255,255,255,0.05);
   position: sticky;
-  top: 0;
+  top: 0; /* La topbar est sticky dans son conteneur parent, pas dans la fenêtre */
   z-index: 50;
 }
 
@@ -2796,5 +2829,587 @@
   
   .modal-footer button {
     width: 100%;
+  }
+}
+
+/* ==========================================
+   FILTER SELECT - STYLISÉ (NEW)
+   ========================================== */
+.filter-select {
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: var(--dp-white);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e2012d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  min-width: 180px;
+}
+
+.filter-select:hover {
+  background-color: rgba(226, 1, 45, 0.1);
+  border-color: rgba(226, 1, 45, 0.5);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--dp-red);
+  box-shadow: 0 0 0 3px rgba(226, 1, 45, 0.2);
+}
+
+.filter-select option {
+  background: #0d0d0d !important;
+  background-color: #0d0d0d !important;
+  color: #ffffff !important;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+}
+
+.filter-select option:hover,
+.filter-select option:focus,
+.filter-select option:checked {
+  background: #e2012d !important;
+  background-color: #e2012d !important;
+  color: white !important;
+}
+
+/* Panel filters container */
+.panel-filters {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* ==========================================
+   GLOBAL SELECT/OPTIONS DARK STYLING
+   ========================================== */
+.admin-panel select,
+.admin-panel select option,
+.modal select,
+.modal select option,
+.form-input[type="select"],
+select.filter-select,
+.admin-content select {
+  background-color: #0d0d0d !important;
+  color: #ffffff !important;
+}
+
+.admin-panel select option,
+.modal select option,
+select option {
+  background: #0d0d0d !important;
+  background-color: #0d0d0d !important;
+  color: #ffffff !important;
+  padding: 10px 12px;
+}
+
+.admin-panel select option:hover,
+.modal select option:hover,
+select option:checked,
+select option:focus {
+  background: #e2012d !important;
+  background-color: #e2012d !important;
+  color: #ffffff !important;
+}
+
+/* Force dark dropdown on form inputs */
+.form-group select,
+.modal-body select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.form-group select option,
+.modal-body select option {
+  background: #0d0d0d !important;
+  color: #ffffff !important;
+}
+
+/* ==========================================
+   DATA TABLE - PREMIUM STYLING (NEW)
+   ========================================== */
+.data-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table thead {
+  background: rgba(226, 1, 45, 0.15);
+  border-bottom: 2px solid var(--dp-red);
+}
+
+.data-table th {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dp-white);
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: var(--transition-fast);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(226, 1, 45, 0.08);
+}
+
+.data-table tbody tr.inactive {
+  opacity: 0.6;
+}
+
+.data-table td {
+  padding: 1rem 1.25rem;
+  color: var(--dp-text);
+  vertical-align: middle;
+}
+
+/* User cell in table */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar-table {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.user-name-table {
+  font-weight: 600;
+  color: var(--dp-white);
+}
+
+/* Role badge in table */
+.role-badge {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-admin {
+  background: linear-gradient(135deg, #e2012d 0%, #ff4757 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(226, 1, 45, 0.3);
+}
+
+.badge-moderator {
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  color: white;
+}
+
+.badge-coach {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+}
+
+.badge-user {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--dp-text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Status indicator */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-indicator.active {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34c759;
+}
+
+.status-indicator.active::before {
+  background: #34c759;
+  box-shadow: 0 0 8px #34c759;
+}
+
+.status-indicator.inactive {
+  background: rgba(255, 59, 48, 0.15);
+  color: #ff3b30;
+}
+
+.status-indicator.inactive::before {
+  background: #ff3b30;
+}
+
+/* Action buttons in table */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-action {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: var(--transition-fast);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--dp-text);
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+}
+
+.btn-action.edit:hover,
+.btn-action.btn-edit:hover {
+  background: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+}
+
+.btn-action.toggle:hover,
+.btn-action.btn-toggle:hover {
+  background: rgba(241, 196, 15, 0.2);
+  color: #f1c40f;
+}
+
+.btn-action.delete:hover,
+.btn-action.btn-delete:hover {
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--dp-white);
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  color: var(--dp-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ==========================================
+   PANEL STYLING IMPROVEMENTS
+   ========================================== */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dp-white);
+  margin: 0;
+}
+
+.title-icon {
+  font-size: 1.25rem;
+}
+
+.panel-badge {
+  background: rgba(226, 1, 45, 0.2);
+  color: var(--dp-red-bright);
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ==========================================
+   PRODUCTS GRID STYLING
+   ========================================== */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.product-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  border-color: rgba(226, 1, 45, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.product-card.featured {
+  border-color: var(--dp-red);
+  box-shadow: 0 0 30px rgba(226, 1, 45, 0.15);
+}
+
+.product-image {
+  height: 140px;
+  background: linear-gradient(135deg, rgba(226, 1, 45, 0.2), rgba(0, 0, 0, 0.5));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.product-placeholder {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.product-badges {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-featured {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.badge-lowstock {
+  background: rgba(255, 204, 0, 0.2);
+  color: #ffcc00;
+  border: 1px solid rgba(255, 204, 0, 0.4);
+}
+
+.badge-outofstock {
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.4);
+}
+
+.product-details {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-category-tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: rgba(226, 1, 45, 0.15);
+  color: var(--dp-red-bright);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  width: fit-content;
+}
+
+.product-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dp-white);
+  margin-bottom: 0.5rem;
+}
+
+.product-description {
+  font-size: 0.85rem;
+  color: var(--dp-text-muted);
+  margin-bottom: 1rem;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.product-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--dp-red);
+}
+
+.product-stock {
+  font-size: 0.85rem;
+  color: var(--dp-text-muted);
+}
+
+.product-stock.low {
+  color: #ffcc00;
+}
+
+.product-stock.out {
+  color: #ff3b30;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.product-actions .btn-action {
+  flex: 1;
+  height: 38px;
+  border-radius: 8px;
+}
+
+/* ==========================================
+   SIDEBAR COLLAPSED ADJUSTMENTS
+   ========================================== */
+.admin-sidebar.collapsed {
+  width: 80px;
+}
+
+.admin-sidebar.collapsed .sidebar-header {
+  justify-content: center;
+  padding: 1rem;
+}
+
+.admin-sidebar.collapsed .sidebar-logo {
+  display: none;
+}
+
+.admin-sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 0.875rem;
+}
+
+.admin-sidebar.collapsed .nav-icon {
+  font-size: 1.4rem;
+}
+
+.admin-sidebar.collapsed + .admin-main {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+/* ==========================================
+   RESPONSIVE DATA TABLES
+   ========================================== */
+@media (max-width: 1024px) {
+  .data-table {
+    font-size: 0.85rem;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 0.75rem 1rem;
+  }
+  
+  .th-email,
+  .td-email,
+  .th-date,
+  .td-date {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-select {
+    width: 100%;
+  }
+  
+  .data-table-wrapper {
+    margin: 0 -1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .products-grid {
+    grid-template-columns: 1fr;
   }
 }

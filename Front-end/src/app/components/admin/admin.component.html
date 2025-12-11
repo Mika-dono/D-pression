@@ -123,15 +123,16 @@
   <!-- ========== SIDEBAR ========== -->
   <aside class="admin-sidebar" [class.collapsed]="sidebarCollapsed">
     <div class="sidebar-header">
-      <div class="sidebar-logo">
+      <div class="sidebar-logo" *ngIf="!sidebarCollapsed">
         <span class="logo-icon">D-P</span>
-        <div class="logo-info" *ngIf="!sidebarCollapsed">
+        <div class="logo-info">
           <span class="logo-text">KYOJIN KJX</span>
           <span class="logo-subtitle">Admin Panel</span>
         </div>
       </div>
-      <button class="btn-collapse" (click)="toggleSidebar()" [title]="sidebarCollapsed ? 'Développer' : 'Réduire'">
-        <span class="collapse-icon">{{ sidebarCollapsed ? '»' : '«' }}</span>
+      <button class="btn-collapse" (click)="toggleSidebar()" [title]="sidebarCollapsed ? 'Ouvrir le menu' : 'Fermer le menu'">
+        <span class="collapse-icon" *ngIf="!sidebarCollapsed">✕</span>
+        <span class="collapse-icon" *ngIf="sidebarCollapsed">☰</span>
       </button>
     </div>
 

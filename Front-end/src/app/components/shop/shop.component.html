@@ -17,7 +17,7 @@
           <span class="title-line accent">Comme un Pro</span>
         </h1>
         <p class="page-subtitle">
-          Découvrez la collection officielle D-PRESSION. Maillots, équipements gaming 
+          Découvrez la collection officielle Kyojin KJX E-sports. Maillots, équipements gaming 
           et accessoires exclusifs portés par nos joueurs professionnels.
         </p>
         <div class="hero-actions">
@@ -266,7 +266,7 @@
         <span class="total-label">Total</span>
         <span class="total-value">{{ (getCartTotal() + (getCartTotal() >= 50 ? 0 : 4.99)).toFixed(2) }} €</span>
       </div>
-      <button class="btn-checkout">
+      <button class="btn-checkout" (click)="openPaymentModal()">
         <span>Procéder au paiement</span>
         <span class="checkout-arrow">→</span>
       </button>
@@ -328,6 +328,217 @@
   <div class="toast-notification" [class.show]="showNotificationToast">
     <span class="toast-icon">✓</span>
     <span class="toast-message">{{ notificationMessage }}</span>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="payment-modal-overlay" *ngIf="showPaymentModal" (click)="closePaymentModal()">
+    <div class="payment-modal" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Finaliser la commande</h2>
+          <p class="modal-subtitle">Total: {{ (getCartTotal() + (getCartTotal() >= 50 ? 0 : 4.99)).toFixed(2) }} €</p>
+        </div>
+        <button class="modal-close" (click)="closePaymentModal()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Payment Method Selection -->
+      <div class="modal-content" *ngIf="paymentStep === 'select'">
+        <p class="method-instruction">Choisissez votre mode de paiement</p>
+        <div class="payment-methods-grid">
+          <button class="payment-method-btn card" (click)="selectPaymentMethod('card')">
+            <span class="method-icon">💳</span>
+            <div class="method-info">
+              <span class="method-name">Carte bancaire</span>
+              <span class="method-desc">Visa, Mastercard, Amex</span>
+            </div>
+            <span class="method-arrow">→</span>
+          </button>
+          <button class="payment-method-btn paypal" (click)="selectPaymentMethod('paypal')">
+            <span class="method-icon">🅿️</span>
+            <div class="method-info">
+              <span class="method-name">PayPal</span>
+              <span class="method-desc">Paiement sécurisé PayPal</span>
+            </div>
+            <span class="method-arrow">→</span>
+          </button>
+          <button class="payment-method-btn stripe" (click)="selectPaymentMethod('stripe')">
+            <span class="method-icon">⚡</span>
+            <div class="method-info">
+              <span class="method-name">Stripe</span>
+              <span class="method-desc">Paiement express sécurisé</span>
+            </div>
+            <span class="method-arrow">→</span>
+          </button>
+          <button class="payment-method-btn wise" (click)="selectPaymentMethod('wise')">
+            <span class="method-icon">🌍</span>
+            <div class="method-info">
+              <span class="method-name">Wise</span>
+              <span class="method-desc">Transfert international</span>
+            </div>
+            <span class="method-arrow">→</span>
+          </button>
+        </div>
+        <div class="secure-notice">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/>
+          </svg>
+          <span>Paiement 100% sécurisé - Données chiffrées SSL</span>
+        </div>
+      </div>
+
+      <!-- Card Payment Form -->
+      <div class="modal-content" *ngIf="paymentStep === 'card'">
+        <button class="back-btn" (click)="goBackToMethods()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Retour
+        </button>        <div class="test-card-info">
+          <span class="test-badge">🧪 TEST</span>
+          <span>Carte: 4242 4242 4242 4242 | Exp: 12/28 | CVV: 123</span>
+        </div>        <form class="card-form" (ngSubmit)="processCardPayment()">
+          <div class="form-group">
+            <label class="form-label">Numéro de carte</label>
+            <div class="card-input-wrapper">
+              <input type="text" class="form-input card-number-input" 
+                     [class.error]="cardErrors.cardNumber"
+                     [value]="cardForm.cardNumber"
+                     (input)="onCardNumberInput($event)"
+                     placeholder="1234 5678 9012 3456" maxlength="19"/>
+              <span class="card-brand-badge" *ngIf="detectedCardBrand">{{ detectedCardBrand | uppercase }}</span>
+            </div>
+            <span class="error-text" *ngIf="cardErrors.cardNumber">{{ cardErrors.cardNumber }}</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nom sur la carte</label>
+            <input type="text" class="form-input" [(ngModel)]="cardForm.cardName" 
+                   name="cardName" placeholder="JEAN DUPONT"/>
+          </div>
+          <div class="form-row">
+            <div class="form-group half">
+              <label class="form-label">Expiration</label>
+              <input type="text" class="form-input" 
+                     [class.error]="cardErrors.expiryDate"
+                     [value]="cardForm.expiryDate"
+                     (input)="onExpiryInput($event)"
+                     placeholder="MM/YY" maxlength="5"/>
+              <span class="error-text" *ngIf="cardErrors.expiryDate">{{ cardErrors.expiryDate }}</span>
+            </div>
+            <div class="form-group half">
+              <label class="form-label">CVV</label>
+              <input type="text" class="form-input" 
+                     [class.error]="cardErrors.cvv"
+                     [value]="cardForm.cvv"
+                     (input)="onCvvInput($event)"
+                     placeholder="123" [attr.maxlength]="detectedCardBrand === 'amex' ? 4 : 3"/>
+              <span class="error-text" *ngIf="cardErrors.cvv">{{ cardErrors.cvv }}</span>
+            </div>
+          </div>
+          <div class="form-divider"><span>Informations de contact</span></div>
+          <div class="form-group">
+            <label class="form-label">Email de confirmation</label>
+            <input type="email" class="form-input" [(ngModel)]="cardForm.email" 
+                   name="email" placeholder="votre@email.com"/>
+          </div>
+          <button type="submit" class="btn-pay">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Payer {{ (getCartTotal() + (getCartTotal() >= 50 ? 0 : 4.99)).toFixed(2) }} €
+          </button>
+        </form>
+      </div>
+
+      <!-- PayPal -->
+      <div class="modal-content" *ngIf="paymentStep === 'paypal'">
+        <button class="back-btn" (click)="goBackToMethods()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Retour
+        </button>
+        <div class="paypal-section">
+          <div class="paypal-logo">🅿️ PayPal</div>
+          <p class="paypal-info">Vous serez redirigé vers PayPal pour finaliser le paiement en toute sécurité.</p>
+          <div id="paypal-button-container-shop" class="paypal-button-container"></div>
+        </div>
+      </div>
+
+      <!-- Stripe -->
+      <div class="modal-content" *ngIf="paymentStep === 'stripe'">
+        <button class="back-btn" (click)="goBackToMethods()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Retour
+        </button>
+        <div class="stripe-section">
+          <div class="stripe-logo">⚡ Stripe</div>
+          <div id="stripe-card-element-shop" class="stripe-element"></div>
+          <button class="btn-pay stripe-btn" (click)="processStripePayment()">
+            Payer {{ (getCartTotal() + (getCartTotal() >= 50 ? 0 : 4.99)).toFixed(2) }} € avec Stripe
+          </button>
+        </div>
+      </div>
+
+      <!-- Wise -->
+      <div class="modal-content" *ngIf="paymentStep === 'wise'">
+        <button class="back-btn" (click)="goBackToMethods()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Retour
+        </button>
+        <div class="wise-section">
+          <div class="wise-logo">🌍 Wise</div>
+          <p class="wise-info">Transfert international avec les meilleurs taux de change.</p>
+          <div class="form-group">
+            <label class="form-label">Votre email</label>
+            <input type="email" class="form-input" [(ngModel)]="wiseEmail" placeholder="votre@email.com"/>
+          </div>
+          <button class="btn-pay wise-btn" (click)="processWisePayment()" [disabled]="!wiseEmail">
+            Créer le transfert de {{ (getCartTotal() + (getCartTotal() >= 50 ? 0 : 4.99)).toFixed(2) }} €
+          </button>
+        </div>
+      </div>
+
+      <!-- Processing -->
+      <div class="modal-content processing" *ngIf="paymentStep === 'processing'">
+        <div class="processing-animation">
+          <div class="spinner"></div>
+        </div>
+        <h3 class="processing-title">Traitement en cours...</h3>
+        <p class="processing-text">Veuillez patienter, ne fermez pas cette fenêtre.</p>
+      </div>
+
+      <!-- Success -->
+      <div class="modal-content success" *ngIf="paymentStep === 'success'">
+        <div class="success-icon">✅</div>
+        <h3 class="success-title">Paiement réussi !</h3>
+        <p class="success-text">Merci pour votre commande chez Kyojin KJX E-sports.<br/>Un email de confirmation vous a été envoyé.</p>
+        <div class="transaction-info">
+          <span class="transaction-label">Transaction</span>
+          <span class="transaction-value">{{ transactionId }}</span>
+        </div>
+        <button class="btn-primary" (click)="closePaymentModal()">Fermer</button>
+      </div>
+
+      <!-- Error -->
+      <div class="modal-content error" *ngIf="paymentStep === 'error'">
+        <div class="error-icon">❌</div>
+        <h3 class="error-title">Échec du paiement</h3>
+        <p class="error-text">{{ paymentError }}</p>
+        <div class="error-actions">
+          <button class="btn-secondary" (click)="closePaymentModal()">Annuler</button>
+          <button class="btn-primary" (click)="retryPayment()">Réessayer</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

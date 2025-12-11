@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService, User } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,13 +13,29 @@ import { filter } from 'rxjs/operators';
   styleUrl: './app.css'
 })
 export class App implements OnInit, AfterViewInit {
-  title = 'D-PRESSION';
+  title = 'KYOJIN KJX';
   
   // Navigation state
   isMenuOpen = false;
   isScrolled = false;
   currentRoute = '/home';
   
+  // Auth state
+  currentUser: User | null = null;
+  isUserAdmin = false;
+
+  // Profile menu state
+  isProfileMenuOpen = false;
+  isProfileModalOpen = false;
+  profileModalTab: 'info' | 'security' | 'preferences' | 'orders' | 'membership' | 'notifications' = 'info';
+  
+  // User stats (mock data for now)
+  userStats = {
+    orderCount: 0,
+    memberDays: 1,
+    points: 100
+  };
+
   // Navigation items
   navItems = [
     { path: '/home', label: 'Accueil', icon: 'home' },
@@ -29,7 +46,7 @@ export class App implements OnInit, AfterViewInit {
     { path: '/membership', label: 'Membership', icon: 'star' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.router.events.pipe(
@@ -38,6 +55,12 @@ export class App implements OnInit, AfterViewInit {
       this.currentRoute = event.urlAfterRedirects;
       this.isMenuOpen = false;
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Subscribe to auth state changes
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isUserAdmin = this.authService.isAdmin();
     });
   }
 
@@ -59,6 +82,36 @@ export class App implements OnInit, AfterViewInit {
   closeMenu(): void {
     this.isMenuOpen = false;
     document.body.style.overflow = '';
+  }
+
+  // Profile menu methods
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
+
+  openProfileModal(tab: 'info' | 'security' | 'preferences' | 'orders' | 'membership' | 'notifications'): void {
+    this.profileModalTab = tab;
+    this.isProfileModalOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeProfileModal(): void {
+    this.isProfileModalOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.authService.clearSession();
+        this.router.navigate(['/']);
+      },
+      error: () => {
+        // Even if logout fails on server, clear local session
+        this.authService.clearSession();
+        this.router.navigate(['/']);
+      }
+    });
   }
 
   private initAnimations(): void {

@@ -5,17 +5,76 @@ import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import gsap from 'gsap';
 
-interface ScheduleData {
-  [key: string]: { start: string; end: string; description: string };
+// =============== INTERFACES ===============
+interface User {
+  id?: number;
+  username: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+interface Team {
+  id?: number;
+  name: string;
+  game: string;
+  description?: string;
+  winRate?: number;
+  logoUrl?: string;
+  members?: TeamMember[];
+}
+
+interface TeamMember {
+  id?: number;
+  name: string;
+  position: string;
+  role?: string;
+  championPool?: string;
+}
+
+interface Product {
+  id?: number;
+  name: string;
+  description?: string;
+  category: string;
+  price: number;
+  stock: number;
+  isFeatured: boolean;
+  imageUrl?: string;
+}
+
+interface Post {
+  id?: number;
+  title: string;
+  excerpt?: string;
+  description?: string;
+  category: string;
+  author: string;
+  date: string;
+  isPublished: boolean;
+  viewCount?: number;
+}
+
+interface Membership {
+  id?: number;
+  name: string;
+  description?: string;
+  price: number;
+  durationDays: number;
+  benefits?: string;
+  isActive: boolean;
 }
 
 interface Event {
   id?: number;
   title: string;
-  type: string;
+  eventType: string;
   date: string;
-  time: string;
+  time?: string;
   description?: string;
+  location?: string;
+  status?: string;
 }
 
 interface Match {
@@ -25,7 +84,9 @@ interface Match {
   team1: string;
   team2: string;
   date: string;
-  time: string;
+  time?: string;
+  score?: string;
+  status?: string;
   hidden: boolean;
 }
 
@@ -39,11 +100,8 @@ interface ScrimRequest {
   notes?: string;
 }
 
-interface DashboardStats {
-  totalEvents: number;
-  totalMatches: number;
-  pendingScrims: number;
-  weeklyTraining: number;
+interface ScheduleData {
+  [key: string]: { start: string; end: string; description: string };
 }
 
 interface NavSection {
@@ -51,6 +109,18 @@ interface NavSection {
   label: string;
   icon: string;
   badge?: number;
+  category: 'admin' | 'esport' | 'content';
+}
+
+interface DashboardStats {
+  totalUsers: number;
+  totalProducts: number;
+  totalPosts: number;
+  totalRevenue: number;
+  totalTeams: number;
+  totalEvents: number;
+  totalMatches: number;
+  pendingScrims: number;
 }
 
 @Component({
@@ -61,61 +131,111 @@ interface NavSection {
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit, AfterViewInit {
-  // Expose Object to template
   Object = Object;
   
-  // Auth
+  // =============== AUTH ===============
   isLoggedIn = false;
   adminName = '';
   credentials = { username: '', password: '' };
   loginError = '';
   isLoggingIn = false;
 
-  // UI
+  // =============== UI STATE ===============
   activeSection = 'dashboard';
+  activeCategory: 'admin' | 'esport' | 'content' = 'admin';
   sidebarCollapsed = false;
   showMobileMenu = false;
   currentTime = new Date();
-  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'];
-  selectedFilter = 'all';
   
-  // Dashboard
-  dashboardStats: DashboardStats = {
-    totalEvents: 0,
-    totalMatches: 0,
-    pendingScrims: 0,
-    weeklyTraining: 0
-  };
+  // Modal states
+  showUserModal = false;
+  showProductModal = false;
+  showPostModal = false;
+  showTeamModal = false;
+  showMembershipModal = false;
+  showEventModal = false;
+  showMatchModal = false;
+  editMode = false;
+  
+  // Filters
+  userFilter = 'all';
+  productFilter = 'all';
+  postFilter = 'all';
+  scrimFilter = 'all';
 
-  // Navigation sections
+  // =============== NAVIGATION ===============
   navSections: NavSection[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'weekly', label: 'Planning', icon: '📅' },
-    { id: 'events', label: 'Événements', icon: '⭐' },
-    { id: 'matches', label: 'Matchs', icon: '🏆' },
-    { id: 'scrims', label: 'Scrims', icon: '🎮' },
-    { id: 'analytics', label: 'Analytiques', icon: '📈' },
-    { id: 'settings', label: 'Paramètres', icon: '⚙️' }
+    // Administration
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', category: 'admin' },
+    { id: 'users', label: 'Utilisateurs', icon: '👥', category: 'admin' },
+    { id: 'products', label: 'Produits', icon: '🛒', category: 'admin' },
+    { id: 'memberships', label: 'Abonnements', icon: '⭐', category: 'admin' },
+    { id: 'posts', label: 'Actualités', icon: '📰', category: 'admin' },
+    // Esport Management
+    { id: 'teams', label: 'Équipes', icon: '🎮', category: 'esport' },
+    { id: 'events', label: 'Événements', icon: '📅', category: 'esport' },
+    { id: 'matches', label: 'Matchs', icon: '🏆', category: 'esport' },
+    { id: 'scrims', label: 'Scrims', icon: '⚔️', category: 'esport' },
+    { id: 'schedule', label: 'Planning', icon: '🗓️', category: 'esport' },
+    // Settings
+    { id: 'settings', label: 'Paramètres', icon: '⚙️', category: 'content' },
   ];
 
-  // Schedule
-  selectedDay = 'LUNDI';
-  schedule: ScheduleData = {};
-  dayForm = { day: 'LUNDI', start: '21:00', end: '00:00', description: "Session d'entraînement" };
+  // =============== DATA ===============
+  // Stats
+  dashboardStats: DashboardStats = {
+    totalUsers: 0,
+    totalProducts: 0,
+    totalPosts: 0,
+    totalRevenue: 0,
+    totalTeams: 0,
+    totalEvents: 0,
+    totalMatches: 0,
+    pendingScrims: 0
+  };
 
-  // Objectives
-  weeklyObjectives = '';
+  // Users
+  users: User[] = [];
+  userForm: User = { username: '', email: '', role: 'USER', isActive: true };
+  userStats: any = {};
+
+  // Teams
+  teams: Team[] = [];
+  teamForm: Team = { name: '', game: 'lol', description: '', winRate: 0 };
+
+  // Products
+  products: Product[] = [];
+  productForm: Product = { name: '', description: '', category: 'apparel', price: 0, stock: 0, isFeatured: false };
+  productCategories = ['apparel', 'merchandise', 'bundle', 'digital'];
+
+  // Memberships
+  memberships: Membership[] = [];
+  membershipForm: Membership = { name: '', description: '', price: 0, durationDays: 30, benefits: '', isActive: true };
+
+  // Posts
+  posts: Post[] = [];
+  postForm: Post = { title: '', excerpt: '', description: '', category: 'esports', author: '', date: '', isPublished: false };
+  postCategories = ['esports', 'announcements', 'interviews', 'releases', 'community'];
 
   // Events
   events: Event[] = [];
-  eventForm = { title: '', type: 'tournament', date: '', time: '', desc: '' };
+  eventForm: Event = { title: '', eventType: 'match', date: '', time: '', description: '', location: '' };
+  eventTypes = ['match', 'scrim', 'fanmeet', 'event', 'training'];
 
   // Matches
   matches: Match[] = [];
-  matchForm = { tournament: '', format: 'Bo1', team1: '', team2: '', date: '', time: '' };
+  matchForm: Match = { tournament: '', format: 'Bo1', team1: '', team2: '', date: '', time: '', hidden: false };
+  matchFormats = ['Bo1', 'Bo3', 'Bo5'];
 
   // Scrims
-  scrimRequests: ScrimRequest[] = [];
+  scrims: ScrimRequest[] = [];
+
+  // Schedule
+  days = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'];
+  selectedDay = 'LUNDI';
+  schedule: ScheduleData = {};
+  dayForm = { day: 'LUNDI', start: '21:00', end: '00:00', description: "Session d'entraînement" };
+  weeklyObjectives = '';
 
   // Toast
   showToastNotification = false;
@@ -131,8 +251,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
       this.isLoggedIn = true;
       this.initializeAllData();
     }
-    
-    // Update time every minute
     setInterval(() => this.currentTime = new Date(), 60000);
   }
 
@@ -190,22 +308,30 @@ export class AdminComponent implements OnInit, AfterViewInit {
   }
 
   initializeAllData(): void {
-    this.loadSchedule();
-    this.loadObjectives();
+    this.loadUsers();
+    this.loadTeams();
+    this.loadProducts();
+    this.loadMemberships();
+    this.loadPosts();
     this.loadEvents();
     this.loadMatches();
-    this.loadScrimRequests();
+    this.loadScrims();
+    this.loadSchedule();
+    this.loadObjectives();
   }
 
   updateDashboardStats(): void {
     this.dashboardStats = {
+      totalUsers: this.users.length,
+      totalProducts: this.products.length,
+      totalPosts: this.posts.length,
+      totalRevenue: this.products.reduce((sum, p) => sum + (p.price * (p.stock > 0 ? 1 : 0)), 0),
+      totalTeams: this.teams.length,
       totalEvents: this.events.length,
       totalMatches: this.matches.length,
-      pendingScrims: this.scrimRequests.filter(s => s.status === 'PENDING').length,
-      weeklyTraining: Object.keys(this.schedule).length
+      pendingScrims: this.scrims.filter(s => s.status === 'PENDING').length
     };
     
-    // Update nav badges
     this.navSections = this.navSections.map(section => {
       if (section.id === 'scrims') {
         return { ...section, badge: this.dashboardStats.pendingScrims };
@@ -214,7 +340,551 @@ export class AdminComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // =============== SCHEDULE (API) ===============
+  // =============== USERS ===============
+  loadUsers(): void {
+    this.apiService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        this.loadUserStats();
+        this.updateDashboardStats();
+      },
+      error: () => {
+        this.users = [];
+        this.updateDashboardStats();
+      }
+    });
+  }
+
+  loadUserStats(): void {
+    this.apiService.getUserStats().subscribe({
+      next: (stats) => this.userStats = stats,
+      error: () => this.userStats = {}
+    });
+  }
+
+  openUserModal(user?: User): void {
+    this.editMode = !!user;
+    this.userForm = user ? { ...user } : { username: '', email: '', role: 'USER', isActive: true };
+    this.showUserModal = true;
+  }
+
+  closeUserModal(): void {
+    this.showUserModal = false;
+    this.userForm = { username: '', email: '', role: 'USER', isActive: true };
+  }
+
+  saveUser(): void {
+    if (!this.userForm.username || !this.userForm.email) {
+      this.showToast('Veuillez remplir tous les champs obligatoires', 'error');
+      return;
+    }
+
+    if (this.editMode && this.userForm.id) {
+      this.apiService.updateUser(this.userForm.id, this.userForm).subscribe({
+        next: () => {
+          this.loadUsers();
+          this.closeUserModal();
+          this.showToast('Utilisateur mis à jour', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la mise à jour', 'error')
+      });
+    } else {
+      const newUser = { ...this.userForm, password: 'password123' };
+      this.apiService.createUser(newUser).subscribe({
+        next: () => {
+          this.loadUsers();
+          this.closeUserModal();
+          this.showToast('Utilisateur créé', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la création', 'error')
+      });
+    }
+  }
+
+  toggleUserActive(user: User): void {
+    if (!user.id) return;
+    this.apiService.toggleUserActive(user.id).subscribe({
+      next: () => {
+        user.isActive = !user.isActive;
+        this.showToast(user.isActive ? 'Utilisateur activé' : 'Utilisateur désactivé', 'success');
+      },
+      error: () => this.showToast('Erreur', 'error')
+    });
+  }
+
+  deleteUser(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
+    this.apiService.deleteUser(id).subscribe({
+      next: () => {
+        this.loadUsers();
+        this.showToast('Utilisateur supprimé', 'warning');
+      },
+      error: () => this.showToast('Erreur lors de la suppression', 'error')
+    });
+  }
+
+  getFilteredUsers(): User[] {
+    if (this.userFilter === 'all') return this.users;
+    if (this.userFilter === 'active') return this.users.filter(u => u.isActive);
+    if (this.userFilter === 'inactive') return this.users.filter(u => !u.isActive);
+    return this.users.filter(u => u.role === this.userFilter.toUpperCase());
+  }
+
+  // =============== TEAMS ===============
+  loadTeams(): void {
+    this.apiService.getTeams().subscribe({
+      next: (data) => {
+        this.teams = data;
+        this.updateDashboardStats();
+      },
+      error: () => this.teams = []
+    });
+  }
+
+  openTeamModal(team?: Team): void {
+    this.editMode = !!team;
+    this.teamForm = team ? { ...team } : { name: '', game: 'lol', description: '', winRate: 0 };
+    this.showTeamModal = true;
+  }
+
+  closeTeamModal(): void {
+    this.showTeamModal = false;
+    this.teamForm = { name: '', game: 'lol', description: '', winRate: 0 };
+  }
+
+  saveTeam(): void {
+    if (!this.teamForm.name || !this.teamForm.game) {
+      this.showToast('Veuillez remplir tous les champs obligatoires', 'error');
+      return;
+    }
+
+    if (this.editMode && this.teamForm.id) {
+      this.apiService.updateTeam(this.teamForm.id, this.teamForm).subscribe({
+        next: () => {
+          this.loadTeams();
+          this.closeTeamModal();
+          this.showToast('Équipe mise à jour', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la mise à jour', 'error')
+      });
+    } else {
+      this.apiService.createTeam(this.teamForm).subscribe({
+        next: () => {
+          this.loadTeams();
+          this.closeTeamModal();
+          this.showToast('Équipe créée', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la création', 'error')
+      });
+    }
+  }
+
+  deleteTeam(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?')) return;
+    this.apiService.deleteTeam(id).subscribe({
+      next: () => {
+        this.loadTeams();
+        this.showToast('Équipe supprimée', 'warning');
+      },
+      error: () => this.showToast('Erreur lors de la suppression', 'error')
+    });
+  }
+
+  // =============== PRODUCTS ===============
+  loadProducts(): void {
+    this.apiService.getProducts().subscribe({
+      next: (data) => {
+        this.products = data;
+        this.updateDashboardStats();
+      },
+      error: () => this.products = []
+    });
+  }
+
+  openProductModal(product?: Product): void {
+    this.editMode = !!product;
+    this.productForm = product ? { ...product } : { name: '', description: '', category: 'apparel', price: 0, stock: 0, isFeatured: false };
+    this.showProductModal = true;
+  }
+
+  closeProductModal(): void {
+    this.showProductModal = false;
+    this.productForm = { name: '', description: '', category: 'apparel', price: 0, stock: 0, isFeatured: false };
+  }
+
+  saveProduct(): void {
+    if (!this.productForm.name || !this.productForm.category) {
+      this.showToast('Veuillez remplir tous les champs obligatoires', 'error');
+      return;
+    }
+
+    if (this.editMode && this.productForm.id) {
+      this.apiService.updateProduct(this.productForm.id, this.productForm).subscribe({
+        next: () => {
+          this.loadProducts();
+          this.closeProductModal();
+          this.showToast('Produit mis à jour', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la mise à jour', 'error')
+      });
+    } else {
+      this.apiService.createProduct(this.productForm).subscribe({
+        next: () => {
+          this.loadProducts();
+          this.closeProductModal();
+          this.showToast('Produit créé', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la création', 'error')
+      });
+    }
+  }
+
+  deleteProduct(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
+    this.apiService.deleteProduct(id).subscribe({
+      next: () => {
+        this.loadProducts();
+        this.showToast('Produit supprimé', 'warning');
+      },
+      error: () => this.showToast('Erreur lors de la suppression', 'error')
+    });
+  }
+
+  getFilteredProducts(): Product[] {
+    if (this.productFilter === 'all') return this.products;
+    if (this.productFilter === 'featured') return this.products.filter(p => p.isFeatured);
+    if (this.productFilter === 'lowstock') return this.products.filter(p => p.stock < 10);
+    return this.products.filter(p => p.category === this.productFilter);
+  }
+
+  // =============== MEMBERSHIPS ===============
+  loadMemberships(): void {
+    this.apiService.getMemberships().subscribe({
+      next: (data) => this.memberships = data,
+      error: () => this.memberships = []
+    });
+  }
+
+  openMembershipModal(membership?: Membership): void {
+    this.editMode = !!membership;
+    this.membershipForm = membership ? { ...membership } : { name: '', description: '', price: 0, durationDays: 30, benefits: '', isActive: true };
+    this.showMembershipModal = true;
+  }
+
+  closeMembershipModal(): void {
+    this.showMembershipModal = false;
+    this.membershipForm = { name: '', description: '', price: 0, durationDays: 30, benefits: '', isActive: true };
+  }
+
+  saveMembership(): void {
+    if (!this.membershipForm.name) {
+      this.showToast('Veuillez remplir le nom', 'error');
+      return;
+    }
+
+    if (this.editMode && this.membershipForm.id) {
+      this.apiService.updateMembership(this.membershipForm.id, this.membershipForm).subscribe({
+        next: () => {
+          this.loadMemberships();
+          this.closeMembershipModal();
+          this.showToast('Abonnement mis à jour', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la mise à jour', 'error')
+      });
+    } else {
+      this.apiService.createMembership(this.membershipForm).subscribe({
+        next: () => {
+          this.loadMemberships();
+          this.closeMembershipModal();
+          this.showToast('Abonnement créé', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la création', 'error')
+      });
+    }
+  }
+
+  deleteMembership(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet abonnement ?')) return;
+    this.apiService.deleteMembership(id).subscribe({
+      next: () => {
+        this.loadMemberships();
+        this.showToast('Abonnement supprimé', 'warning');
+      },
+      error: () => this.showToast('Erreur lors de la suppression', 'error')
+    });
+  }
+
+  // =============== POSTS ===============
+  loadPosts(): void {
+    this.apiService.getPosts().subscribe({
+      next: (data) => {
+        this.posts = data.map((p: any) => ({
+          ...p,
+          date: p.date ? p.date.split('T')[0] : ''
+        }));
+        this.updateDashboardStats();
+      },
+      error: () => this.posts = []
+    });
+  }
+
+  openPostModal(post?: Post): void {
+    this.editMode = !!post;
+    this.postForm = post ? { ...post } : { title: '', excerpt: '', description: '', category: 'esports', author: this.adminName, date: new Date().toISOString().split('T')[0], isPublished: false };
+    this.showPostModal = true;
+  }
+
+  closePostModal(): void {
+    this.showPostModal = false;
+    this.postForm = { title: '', excerpt: '', description: '', category: 'esports', author: '', date: '', isPublished: false };
+  }
+
+  savePost(): void {
+    if (!this.postForm.title) {
+      this.showToast('Veuillez remplir le titre', 'error');
+      return;
+    }
+
+    const postData = {
+      ...this.postForm,
+      date: `${this.postForm.date}T00:00:00`
+    };
+
+    if (this.editMode && this.postForm.id) {
+      this.apiService.updatePost(this.postForm.id, postData).subscribe({
+        next: () => {
+          this.loadPosts();
+          this.closePostModal();
+          this.showToast('Article mis à jour', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la mise à jour', 'error')
+      });
+    } else {
+      this.apiService.createPost(postData).subscribe({
+        next: () => {
+          this.loadPosts();
+          this.closePostModal();
+          this.showToast('Article créé', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la création', 'error')
+      });
+    }
+  }
+
+  deletePost(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
+    this.apiService.deletePost(id).subscribe({
+      next: () => {
+        this.loadPosts();
+        this.showToast('Article supprimé', 'warning');
+      },
+      error: () => this.showToast('Erreur lors de la suppression', 'error')
+    });
+  }
+
+  getFilteredPosts(): Post[] {
+    if (this.postFilter === 'all') return this.posts;
+    if (this.postFilter === 'published') return this.posts.filter(p => p.isPublished);
+    if (this.postFilter === 'draft') return this.posts.filter(p => !p.isPublished);
+    return this.posts.filter(p => p.category === this.postFilter);
+  }
+
+  // =============== EVENTS ===============
+  loadEvents(): void {
+    this.apiService.getEvents().subscribe({
+      next: (data) => {
+        this.events = data.map((e: any) => ({
+          ...e,
+          eventType: e.eventType || e.type || 'event',
+          date: e.date ? e.date.split('T')[0] : '',
+          time: e.time || (e.date ? e.date.split('T')[1]?.substring(0, 5) : '')
+        }));
+        this.updateDashboardStats();
+      },
+      error: () => this.events = []
+    });
+  }
+
+  openEventModal(event?: Event): void {
+    this.editMode = !!event;
+    this.eventForm = event ? { ...event } : { title: '', eventType: 'match', date: '', time: '', description: '', location: '' };
+    this.showEventModal = true;
+  }
+
+  closeEventModal(): void {
+    this.showEventModal = false;
+    this.eventForm = { title: '', eventType: 'match', date: '', time: '', description: '', location: '' };
+  }
+
+  saveEvent(): void {
+    if (!this.eventForm.title || !this.eventForm.date) {
+      this.showToast('Veuillez remplir les champs obligatoires', 'error');
+      return;
+    }
+
+    const eventData = {
+      ...this.eventForm,
+      date: `${this.eventForm.date}T${this.eventForm.time || '00:00'}:00`
+    };
+
+    if (this.editMode && this.eventForm.id) {
+      this.apiService.updateEvent(this.eventForm.id, eventData).subscribe({
+        next: () => {
+          this.loadEvents();
+          this.closeEventModal();
+          this.showToast('Événement mis à jour', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la mise à jour', 'error')
+      });
+    } else {
+      this.apiService.createEvent(eventData).subscribe({
+        next: () => {
+          this.loadEvents();
+          this.closeEventModal();
+          this.showToast('Événement créé', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la création', 'error')
+      });
+    }
+  }
+
+  deleteEvent(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) return;
+    this.apiService.deleteEvent(id).subscribe({
+      next: () => {
+        this.loadEvents();
+        this.showToast('Événement supprimé', 'warning');
+      },
+      error: () => this.showToast('Erreur lors de la suppression', 'error')
+    });
+  }
+
+  // =============== MATCHES ===============
+  loadMatches(): void {
+    this.apiService.getMatches().subscribe({
+      next: (data) => {
+        this.matches = data.map((m: any) => ({
+          ...m,
+          date: m.date ? m.date.split('T')[0] : '',
+          time: m.time || (m.date ? m.date.split('T')[1]?.substring(0, 5) : ''),
+          hidden: m.hidden || false
+        }));
+        this.updateDashboardStats();
+      },
+      error: () => this.matches = []
+    });
+  }
+
+  openMatchModal(match?: Match): void {
+    this.editMode = !!match;
+    this.matchForm = match ? { ...match } : { tournament: '', format: 'Bo1', team1: '', team2: '', date: '', time: '', hidden: false };
+    this.showMatchModal = true;
+  }
+
+  closeMatchModal(): void {
+    this.showMatchModal = false;
+    this.matchForm = { tournament: '', format: 'Bo1', team1: '', team2: '', date: '', time: '', hidden: false };
+  }
+
+  saveMatch(): void {
+    if (!this.matchForm.tournament || !this.matchForm.team1 || !this.matchForm.team2) {
+      this.showToast('Veuillez remplir les champs obligatoires', 'error');
+      return;
+    }
+
+    const matchData = {
+      ...this.matchForm,
+      date: `${this.matchForm.date || new Date().toISOString().split('T')[0]}T${this.matchForm.time || '00:00'}:00`
+    };
+
+    if (this.editMode && this.matchForm.id) {
+      this.apiService.updateMatch(this.matchForm.id, matchData).subscribe({
+        next: () => {
+          this.loadMatches();
+          this.closeMatchModal();
+          this.showToast('Match mis à jour', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la mise à jour', 'error')
+      });
+    } else {
+      this.apiService.createMatch(matchData).subscribe({
+        next: () => {
+          this.loadMatches();
+          this.closeMatchModal();
+          this.showToast('Match créé', 'success');
+        },
+        error: () => this.showToast('Erreur lors de la création', 'error')
+      });
+    }
+  }
+
+  toggleMatchVisibility(match: Match): void {
+    if (!match.id) return;
+    this.apiService.toggleMatchVisibility(match.id).subscribe({
+      next: (updated) => {
+        match.hidden = updated.hidden;
+        this.showToast(match.hidden ? 'Match masqué' : 'Match visible', 'success');
+      },
+      error: () => this.showToast('Erreur', 'error')
+    });
+  }
+
+  deleteMatch(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce match ?')) return;
+    this.apiService.deleteMatch(id).subscribe({
+      next: () => {
+        this.loadMatches();
+        this.showToast('Match supprimé', 'warning');
+      },
+      error: () => this.showToast('Erreur lors de la suppression', 'error')
+    });
+  }
+
+  // =============== SCRIMS ===============
+  loadScrims(): void {
+    this.apiService.getScrims().subscribe({
+      next: (data) => {
+        this.scrims = data.map((s: any) => ({
+          ...s,
+          date: s.date ? s.date.split('T')[0] : '',
+          status: s.status || 'PENDING'
+        }));
+        this.updateDashboardStats();
+      },
+      error: () => this.scrims = []
+    });
+  }
+
+  updateScrimStatus(scrim: ScrimRequest, status: string): void {
+    if (!scrim.id) return;
+    const updated = { ...scrim, status: status.toUpperCase() };
+    this.apiService.updateScrim(scrim.id, updated).subscribe({
+      next: () => {
+        scrim.status = status.toUpperCase();
+        this.updateDashboardStats();
+        this.showToast(`Demande ${status === 'APPROVED' ? 'acceptée' : 'refusée'}`, status === 'APPROVED' ? 'success' : 'warning');
+      },
+      error: () => this.showToast('Erreur', 'error')
+    });
+  }
+
+  deleteScrim(id: number): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) return;
+    this.apiService.deleteScrim(id).subscribe({
+      next: () => {
+        this.loadScrims();
+        this.showToast('Demande supprimée', 'warning');
+      },
+      error: () => this.showToast('Erreur lors de la suppression', 'error')
+    });
+  }
+
+  getFilteredScrims(): ScrimRequest[] {
+    if (this.scrimFilter === 'all') return this.scrims;
+    return this.scrims.filter(s => s.status === this.scrimFilter.toUpperCase());
+  }
+
+  // =============== SCHEDULE ===============
   loadSchedule(): void {
     this.apiService.getSchedules().subscribe({
       next: (data) => {
@@ -227,15 +897,18 @@ export class AdminComponent implements OnInit, AfterViewInit {
           };
         });
         this.fillDay(this.selectedDay);
-        this.updateDashboardStats();
       },
-      error: () => {
-        // Fallback to localStorage if API fails
-        this.schedule = this.getScheduleFromLocalStorage();
-        this.fillDay(this.selectedDay);
-        this.updateDashboardStats();
-      }
+      error: () => this.schedule = {}
     });
+  }
+
+  fillDay(day: string): void {
+    const data = this.schedule[day] || { start: '21:00', end: '00:00', description: "Session d'entraînement" };
+    this.dayForm.day = day;
+    this.dayForm.start = data.start;
+    this.dayForm.end = data.end;
+    this.dayForm.description = data.description;
+    this.selectedDay = day;
   }
 
   saveScheduleForm(): void {
@@ -253,292 +926,28 @@ export class AdminComponent implements OnInit, AfterViewInit {
           end: this.dayForm.end,
           description: this.dayForm.description
         };
-        this.updateDashboardStats();
-        this.showToast('Planning mis à jour (DB)', 'success');
+        this.showToast('Planning mis à jour', 'success');
       },
-      error: () => {
-        // Fallback to localStorage
-        this.schedule[this.dayForm.day] = {
-          start: this.dayForm.start,
-          end: this.dayForm.end,
-          description: this.dayForm.description
-        };
-        this.saveScheduleToLocalStorage(this.schedule);
-        this.updateDashboardStats();
-        this.showToast('Planning mis à jour (local)', 'warning');
-      }
+      error: () => this.showToast('Erreur lors de la mise à jour', 'error')
     });
   }
 
-  fillDay(day: string): void {
-    const data = this.schedule[day] || { start: '21:00', end: '00:00', description: "Session d'entraînement" };
-    this.dayForm.day = day;
-    this.dayForm.start = data.start;
-    this.dayForm.end = data.end;
-    this.dayForm.description = data.description;
-    this.selectedDay = day;
-  }
-
-  // LocalStorage fallback methods for schedule
-  getScheduleFromLocalStorage(): ScheduleData {
-    try {
-      const raw = localStorage.getItem('cgk_weekly_schedule');
-      const parsed = raw ? JSON.parse(raw) : {};
-      return Array.isArray(parsed) ? {} : parsed;
-    } catch {
-      return {};
-    }
-  }
-
-  saveScheduleToLocalStorage(schedule: ScheduleData): void {
-    try {
-      localStorage.setItem('cgk_weekly_schedule', JSON.stringify(schedule));
-    } catch { /* ignore */ }
-  }
-
-  // =============== OBJECTIVES (localStorage) ===============
   loadObjectives(): void {
     this.weeklyObjectives = localStorage.getItem('cgk_weekly_objectives') || '';
   }
 
   saveObjectives(): void {
-    try {
-      localStorage.setItem('cgk_weekly_objectives', this.weeklyObjectives);
-    } catch { /* ignore */ }
+    localStorage.setItem('cgk_weekly_objectives', this.weeklyObjectives);
     this.showToast('Objectifs enregistrés', 'success');
   }
 
-  // =============== EVENTS (API) ===============
-  loadEvents(): void {
-    this.apiService.getEvents().subscribe({
-      next: (data) => {
-        this.events = data.map((e: any) => ({
-          id: e.id,
-          title: e.title,
-          type: e.type || 'tournament',
-          date: e.date ? e.date.split('T')[0] : '',
-          time: e.time || (e.date ? e.date.split('T')[1]?.substring(0, 5) : ''),
-          description: e.description
-        }));
-        this.updateDashboardStats();
-      },
-      error: () => {
-        this.events = [];
-        this.updateDashboardStats();
-      }
-    });
-  }
-
-  addEvent(): void {
-    if (!this.eventForm.title || !this.eventForm.date) {
-      this.showToast('Veuillez remplir tous les champs requis', 'error');
-      return;
-    }
-    
-    const eventData = {
-      title: this.eventForm.title,
-      type: this.eventForm.type || 'tournament',
-      date: `${this.eventForm.date}T${this.eventForm.time || '00:00'}:00`,
-      time: this.eventForm.time,
-      description: this.eventForm.desc || ''
-    };
-    
-    this.apiService.createEvent(eventData).subscribe({
-      next: (created) => {
-        this.events.push({
-          id: created.id,
-          title: created.title,
-          type: created.type,
-          date: this.eventForm.date,
-          time: this.eventForm.time,
-          description: created.description
-        });
-        this.eventForm = { title: '', type: 'tournament', date: '', time: '', desc: '' };
-        this.updateDashboardStats();
-        this.showToast('Événement créé dans la DB ✅', 'success');
-      },
-      error: (err) => {
-        console.error('Error creating event:', err);
-        this.showToast('Erreur lors de la création', 'error');
-      }
-    });
-  }
-
-  deleteEvent(id: number | undefined): void {
-    if (!id) return;
-    
-    this.apiService.deleteEvent(id).subscribe({
-      next: () => {
-        this.events = this.events.filter(ev => ev.id !== id);
-        this.updateDashboardStats();
-        this.showToast('Événement supprimé de la DB', 'warning');
-      },
-      error: () => {
-        this.showToast('Erreur lors de la suppression', 'error');
-      }
-    });
-  }
-
-  labelEvent(type: string): string {
-    const map: { [key: string]: string } = {
-      tournament: 'Tournoi',
-      scrim: 'Scrim',
-      training: 'Entraînement',
-      meeting: 'Réunion'
-    };
-    return map[type] || type;
-  }
-
-  getEventIcon(type: string): string {
-    const icons: { [key: string]: string } = {
-      tournament: '🏆',
-      scrim: '🎮',
-      training: '💪',
-      meeting: '👥'
-    };
-    return icons[type] || '📅';
-  }
-
-  // =============== MATCHES (API) ===============
-  loadMatches(): void {
-    this.apiService.getMatches().subscribe({
-      next: (data) => {
-        this.matches = data.map((m: any) => ({
-          id: m.id,
-          tournament: m.tournament,
-          format: m.format || 'Bo1',
-          team1: m.team1,
-          team2: m.team2,
-          date: m.date ? m.date.split('T')[0] : '',
-          time: m.time || (m.date ? m.date.split('T')[1]?.substring(0, 5) : ''),
-          hidden: m.hidden || false
-        }));
-        this.updateDashboardStats();
-      },
-      error: () => {
-        this.matches = [];
-        this.updateDashboardStats();
-      }
-    });
-  }
-
-  addMatch(): void {
-    if (!this.matchForm.tournament || !this.matchForm.team1 || !this.matchForm.team2) {
-      this.showToast('Veuillez remplir tous les champs requis', 'error');
-      return;
-    }
-    
-    const matchData = {
-      tournament: this.matchForm.tournament,
-      format: this.matchForm.format || 'Bo1',
-      team1: this.matchForm.team1,
-      team2: this.matchForm.team2,
-      date: `${this.matchForm.date || new Date().toISOString().split('T')[0]}T${this.matchForm.time || '00:00'}:00`,
-      time: this.matchForm.time,
-      hidden: false
-    };
-    
-    this.apiService.createMatch(matchData).subscribe({
-      next: (created) => {
-        this.matches.push({
-          id: created.id,
-          tournament: created.tournament,
-          format: created.format,
-          team1: created.team1,
-          team2: created.team2,
-          date: this.matchForm.date,
-          time: this.matchForm.time,
-          hidden: false
-        });
-        this.matchForm = { tournament: '', format: 'Bo1', team1: '', team2: '', date: '', time: '' };
-        this.updateDashboardStats();
-        this.showToast('Match programmé dans la DB ✅', 'success');
-      },
-      error: (err) => {
-        console.error('Error creating match:', err);
-        this.showToast('Erreur lors de la création', 'error');
-      }
-    });
-  }
-
-  deleteMatch(id: number | undefined): void {
-    if (!id) return;
-    
-    this.apiService.deleteMatch(id).subscribe({
-      next: () => {
-        this.matches = this.matches.filter(m => m.id !== id);
-        this.updateDashboardStats();
-        this.showToast('Match supprimé de la DB', 'warning');
-      },
-      error: () => {
-        this.showToast('Erreur lors de la suppression', 'error');
-      }
-    });
-  }
-
-  toggleMatch(id: number | undefined): void {
-    if (!id) return;
-    
-    this.apiService.toggleMatchVisibility(id).subscribe({
-      next: (updated) => {
-        const match = this.matches.find(m => m.id === id);
-        if (match) {
-          match.hidden = updated.hidden;
-          this.showToast(match.hidden ? 'Match masqué' : 'Match visible', 'success');
-        }
-      },
-      error: () => {
-        this.showToast('Erreur lors de la mise à jour', 'error');
-      }
-    });
-  }
-
-  // =============== SCRIMS (API) ===============
-  loadScrimRequests(): void {
-    this.apiService.getScrims().subscribe({
-      next: (data) => {
-        this.scrimRequests = data.map((s: any) => ({
-          id: s.id,
-          opponent: s.opponent,
-          description: s.description,
-          date: s.date ? s.date.split('T')[0] : '',
-          status: s.status || 'PENDING',
-          game: s.game,
-          notes: s.notes
-        }));
-        this.updateDashboardStats();
-      },
-      error: () => {
-        this.scrimRequests = [];
-        this.updateDashboardStats();
-      }
-    });
-  }
-
-  updateScrim(id: number | undefined, status: string): void {
-    if (!id) return;
-    
-    const request = this.scrimRequests.find(r => r.id === id);
-    if (!request) return;
-    
-    const updatedScrim = { ...request, status: status.toUpperCase() };
-    
-    this.apiService.updateScrim(id, updatedScrim).subscribe({
-      next: () => {
-        request.status = status.toUpperCase();
-        this.updateDashboardStats();
-        this.showToast(`Demande ${status === 'accepted' ? 'acceptée' : 'refusée'}`, status === 'accepted' ? 'success' : 'warning');
-      },
-      error: () => {
-        this.showToast('Erreur lors de la mise à jour', 'error');
-      }
-    });
-  }
-
-  // =============== UTILITIES ===============
+  // =============== UI HELPERS ===============
   switchSection(section: string): void {
     this.activeSection = section;
     this.showMobileMenu = false;
+    
+    const nav = this.navSections.find(n => n.id === section);
+    if (nav) this.activeCategory = nav.category;
     
     gsap.fromTo('.admin-panel, .stat-card', 
       { opacity: 0, y: 20 },
@@ -554,72 +963,43 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.showMobileMenu = !this.showMobileMenu;
   }
 
+  getSectionsByCategory(category: 'admin' | 'esport' | 'content'): NavSection[] {
+    return this.navSections.filter(s => s.category === category);
+  }
+
   getSectionTitle(): string {
     const titles: { [key: string]: string } = {
       dashboard: 'Tableau de bord',
-      weekly: 'Planning Hebdomadaire',
-      objectives: 'Objectifs de la Semaine',
+      users: 'Gestion des Utilisateurs',
+      products: 'Gestion des Produits',
+      memberships: 'Gestion des Abonnements',
+      posts: 'Gestion des Actualités',
+      teams: 'Gestion des Équipes',
       events: 'Gestion des Événements',
       matches: 'Gestion des Matchs',
       scrims: 'Demandes de Scrims',
-      analytics: 'Analytiques',
+      schedule: 'Planning Hebdomadaire',
       settings: 'Paramètres'
     };
     return titles[this.activeSection] || 'Administration';
   }
 
+  getGreeting(): string {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bonjour';
+    if (hour < 18) return 'Bon après-midi';
+    return 'Bonsoir';
+  }
+
   formatDate(date: string): string {
-    if (!date) return 'Date à définir';
+    if (!date) return 'Non défini';
     const d = new Date(`${date}T00:00:00`);
-    if (Number.isNaN(d.getTime())) return 'Date à définir';
-    return d.toLocaleDateString('fr-FR', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+    if (Number.isNaN(d.getTime())) return 'Non défini';
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
-  formatTime(time: string): string {
-    return time || '--:--';
-  }
-
-  getRelativeDate(date: string): string {
-    if (!date) return '';
-    const now = new Date();
-    const eventDate = new Date(`${date}T00:00:00`);
-    const diffTime = eventDate.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return "Aujourd'hui";
-    if (diffDays === 1) return 'Demain';
-    if (diffDays < 0) return `Il y a ${Math.abs(diffDays)} jour${Math.abs(diffDays) > 1 ? 's' : ''}`;
-    if (diffDays <= 7) return `Dans ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
-    return '';
-  }
-
-  badgeClass(status: string): string {
-    const classes: { [key: string]: string } = {
-      APPROVED: 'badge-accepted',
-      accepted: 'badge-accepted',
-      REJECTED: 'badge-rejected',
-      rejected: 'badge-rejected',
-      PENDING: 'badge-pending',
-      pending: 'badge-pending'
-    };
-    return classes[status] || 'badge-pending';
-  }
-
-  labelStatus(status: string): string {
-    const map: { [key: string]: string } = {
-      PENDING: 'En attente',
-      pending: 'En attente',
-      APPROVED: 'Acceptée',
-      accepted: 'Acceptée',
-      REJECTED: 'Refusée',
-      rejected: 'Refusée'
-    };
-    return map[status] || status;
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
   }
 
   showToast(message: string, type: 'success' | 'error' | 'warning' = 'success'): void {
@@ -627,6 +1007,74 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.toastType = type;
     this.showToastNotification = true;
     setTimeout(() => this.showToastNotification = false, 3000);
+  }
+
+  getRoleBadgeClass(role: string): string {
+    const classes: { [key: string]: string } = {
+      ADMIN: 'badge-admin',
+      MODERATOR: 'badge-moderator',
+      COACH: 'badge-coach',
+      USER: 'badge-user'
+    };
+    return classes[role] || 'badge-user';
+  }
+
+  getStatusBadgeClass(status: string): string {
+    const classes: { [key: string]: string } = {
+      APPROVED: 'badge-success',
+      PENDING: 'badge-warning',
+      REJECTED: 'badge-danger'
+    };
+    return classes[status] || 'badge-warning';
+  }
+
+  badgeClass(status: string): string {
+    return this.getStatusBadgeClass(status);
+  }
+
+  labelStatus(status: string): string {
+    const map: { [key: string]: string } = {
+      PENDING: 'En attente',
+      APPROVED: 'Acceptée',
+      REJECTED: 'Refusée'
+    };
+    return map[status] || status;
+  }
+
+  getGameIcon(game: string): string {
+    const icons: { [key: string]: string } = {
+      lol: '🎮',
+      valorant: '🔫',
+      cs2: '💥',
+      fortnite: '🏗️'
+    };
+    return icons[game] || '🎮';
+  }
+
+  getEventTypeLabel(type: string): string {
+    const labels: { [key: string]: string } = {
+      match: 'Match',
+      scrim: 'Scrim',
+      fanmeet: 'Fan Meet',
+      event: 'Événement',
+      training: 'Entraînement'
+    };
+    return labels[type] || type;
+  }
+
+  getCategoryLabel(category: string): string {
+    const labels: { [key: string]: string } = {
+      apparel: 'Vêtements',
+      merchandise: 'Merchandise',
+      bundle: 'Bundle',
+      digital: 'Digital',
+      esports: 'Esports',
+      announcements: 'Annonces',
+      interviews: 'Interviews',
+      releases: 'Sorties',
+      community: 'Communauté'
+    };
+    return labels[category] || category;
   }
 
   getSortedEvents(): Event[] {
@@ -649,22 +1097,5 @@ export class AdminComponent implements OnInit, AfterViewInit {
   getUpcomingMatches(): Match[] {
     const now = new Date();
     return this.getSortedMatches().filter(m => !m.hidden && new Date(`${m.date}T${m.time || '00:00'}`) >= now).slice(0, 3);
-  }
-
-  getFilteredScrims(): ScrimRequest[] {
-    if (this.selectedFilter === 'all') return this.scrimRequests;
-    const statusMap: { [key: string]: string } = {
-      pending: 'PENDING',
-      accepted: 'APPROVED',
-      rejected: 'REJECTED'
-    };
-    return this.scrimRequests.filter(r => r.status === statusMap[this.selectedFilter]);
-  }
-
-  getGreeting(): string {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Bonjour';
-    if (hour < 18) return 'Bon après-midi';
-    return 'Bonsoir';
   }
 }

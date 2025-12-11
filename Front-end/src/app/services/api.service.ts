@@ -10,9 +10,62 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  // =============== USERS ===============
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users`);
+  }
+
+  getUserById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/${id}`);
+  }
+
+  getUsersByRole(role: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/role/${role}`);
+  }
+
+  getUserStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/stats`);
+  }
+
+  createUser(user: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users`, user);
+  }
+
+  updateUser(id: number, user: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/users/${id}`, user);
+  }
+
+  toggleUserActive(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/${id}/toggle-active`, {});
+  }
+
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/users/${id}`);
+  }
+
   // =============== TEAMS ===============
   getTeams(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/teams`);
+  }
+
+  getTeamById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/teams/${id}`);
+  }
+
+  getTeamsByGame(game: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/teams/game/${game}`);
+  }
+
+  createTeam(team: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/teams`, team);
+  }
+
+  updateTeam(id: number, team: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/teams/${id}`, team);
+  }
+
+  deleteTeam(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/teams/${id}`);
   }
 
   // =============== EVENTS ===============
@@ -116,14 +169,87 @@ export class ApiService {
     return this.http.get<any[]>(`${this.apiUrl}/products`);
   }
 
+  getProductById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/products/${id}`);
+  }
+
+  getProductsByCategory(category: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/products/category/${category}`);
+  }
+
+  getFeaturedProducts(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/products/featured`);
+  }
+
+  createProduct(product: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/products`, product);
+  }
+
+  updateProduct(id: number, product: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/products/${id}`, product);
+  }
+
+  deleteProduct(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/products/${id}`);
+  }
+
   // =============== MEMBERSHIPS ===============
   getMemberships(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/memberships`);
   }
 
+  getMembershipById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/memberships/${id}`);
+  }
+
+  getActiveMemberships(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/memberships/active`);
+  }
+
+  createMembership(membership: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/memberships`, membership);
+  }
+
+  updateMembership(id: number, membership: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/memberships/${id}`, membership);
+  }
+
+  deleteMembership(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/memberships/${id}`);
+  }
+
   // =============== POSTS/NEWS ===============
   getPosts(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/posts`);
+  }
+
+  getPostById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/posts/${id}`);
+  }
+
+  getPostsByCategory(category: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/posts/category/${category}`);
+  }
+
+  getPublishedPosts(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/posts/published`);
+  }
+
+  createPost(post: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/posts`, post);
+  }
+
+  updatePost(id: number, post: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/posts/${id}`, post);
+  }
+
+  deletePost(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/posts/${id}`);
+  }
+
+  // =============== PAYMENTS ===============
+  getPayments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/payments`);
   }
 
   // =============== AUTH ===============

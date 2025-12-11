@@ -1,11 +1,11 @@
--- data.sql - Initial data for D-PRESSION Esports (H2 compatible)
+-- data.sql - Initial data for Kyojin KJX E-sports (H2 compatible)
 
 -- Insert Teams
 INSERT INTO teams (name, game, description, win_rate, created_at, updated_at) VALUES 
-    ('D-PRESSION LoL', 'lol', 'Roster principal League of Legends - Competiteurs LFL', 0.72, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('D-PRESSION Valorant', 'valorant', 'Equipe professionnelle Valorant - VCT EMEA', 0.68, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('D-PRESSION Academy', 'lol', 'Programme de developpement des talents', 0.58, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('D-PRESSION CS2', 'cs2', 'Division Counter-Strike 2', 0.65, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    ('Kyojin KJX LoL', 'lol', 'Roster principal League of Legends - Competiteurs LFL', 0.72, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Kyojin KJX Valorant', 'valorant', 'Equipe professionnelle Valorant - VCT EMEA', 0.68, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Kyojin KJX Academy', 'lol', 'Programme de developpement des talents', 0.58, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Kyojin KJX CS2', 'cs2', 'Division Counter-Strike 2', 0.65, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Insert Team Members
 INSERT INTO team_members (team_id, name, position, role, champion_pool, created_at) VALUES 
@@ -42,19 +42,19 @@ INSERT INTO events (title, description, event_type, date, time, location, status
     ('Bootcamp Valencia', 'Camp entrainement intensif', 'event', '2025-02-15 10:00:00', '10:00', 'Valencia, Espagne', 'SCHEDULED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Insert Products
-INSERT INTO products (name, description, category, price, stock, is_featured, created_at, updated_at) VALUES 
-    ('Jersey D-PRESSION 2025', 'Maillot officiel saison 2025 - Design premium', 'apparel', 69.99, 150, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Jersey D-PRESSION Away', 'Maillot exterieur edition limitee', 'apparel', 69.99, 80, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Hoodie D-PRESSION Premium', 'Sweatshirt oversize coton bio', 'apparel', 89.99, 75, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Casquette D-PRESSION', 'Casquette snapback brodee', 'merchandise', 34.99, 200, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Tapis de souris XXL', 'Tapis gaming 900x400mm', 'merchandise', 29.99, 120, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Mug D-PRESSION', 'Mug ceramique 350ml', 'merchandise', 14.99, 300, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('T-Shirt Signature', 'T-shirt signature joueurs', 'apparel', 39.99, 100, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Pack Fan Ultimate', 'Jersey + Hoodie + Casquette', 'bundle', 159.99, 30, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Sticker Pack', 'Lot de 10 stickers holographiques', 'merchandise', 9.99, 500, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Poster Equipe 2025', 'Poster haute qualite 60x90cm', 'merchandise', 19.99, 200, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Echarpe Fan', 'Echarpe tricotee aux couleurs D-PRESSION', 'apparel', 24.99, 150, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Gourde Sport', 'Gourde isotherme 750ml', 'merchandise', 22.99, 100, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO products (name, description, category, price, stock, is_featured, image_url, created_at, updated_at) VALUES 
+    ('Jersey Kyojin KJX 2025', 'Maillot officiel saison 2025 - Design premium', 'apparel', 69.99, 150, TRUE, 'https://i.pinimg.com/736x/8a/3c/5e/8a3c5e0f8b9d0c1a2b3c4d5e6f7a8b9c.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Jersey Kyojin KJX Away', 'Maillot exterieur edition limitee', 'apparel', 69.99, 80, TRUE, 'https://i.pinimg.com/736x/2b/4d/6f/2b4d6f8a0c2e4g6i8k0m2o4q6s8u0w.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Hoodie Kyojin KJX Premium', 'Sweatshirt oversize coton bio', 'apparel', 89.99, 75, TRUE, 'https://i.pinimg.com/736x/3c/5e/7g/3c5e7g9i1k3m5o7q9s1u3w5y7a9c1e.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Casquette Kyojin KJX', 'Casquette snapback brodee', 'merchandise', 34.99, 200, FALSE, 'https://i.pinimg.com/736x/4d/6f/8h/4d6f8h0j2l4n6p8r0t2v4x6z8b0d2f.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Tapis de souris XXL', 'Tapis gaming 900x400mm', 'merchandise', 29.99, 120, FALSE, 'https://i.pinimg.com/736x/5e/7g/9i/5e7g9i1k3m5o7q9s1u3w5y7a9c1e3g.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Mug Kyojin KJX', 'Mug ceramique 350ml', 'merchandise', 14.99, 300, FALSE, 'https://i.pinimg.com/736x/6f/8h/0j/6f8h0j2l4n6p8r0t2v4x6z8b0d2f4h.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('T-Shirt Signature', 'T-shirt signature joueurs', 'apparel', 39.99, 100, TRUE, 'https://i.pinimg.com/736x/7g/9i/1k/7g9i1k3m5o7q9s1u3w5y7a9c1e3g5i.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Pack Fan Ultimate', 'Jersey + Hoodie + Casquette', 'bundle', 159.99, 30, TRUE, 'https://i.pinimg.com/736x/8h/0j/2l/8h0j2l4n6p8r0t2v4x6z8b0d2f4h6j.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Sticker Pack', 'Lot de 10 stickers holographiques', 'merchandise', 9.99, 500, FALSE, 'https://i.pinimg.com/736x/9i/1k/3m/9i1k3m5o7q9s1u3w5y7a9c1e3g5i7k.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Poster Equipe 2025', 'Poster haute qualite 60x90cm', 'merchandise', 19.99, 200, FALSE, 'https://i.pinimg.com/736x/0j/2l/4n/0j2l4n6p8r0t2v4x6z8b0d2f4h6j8l.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Echarpe Fan', 'Echarpe tricotee aux couleurs Kyojin KJX', 'apparel', 24.99, 150, FALSE, 'https://i.pinimg.com/736x/1k/3m/5o/1k3m5o7q9s1u3w5y7a9c1e3g5i7k9m.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Gourde Sport', 'Gourde isotherme 750ml', 'merchandise', 22.99, 100, FALSE, 'https://i.pinimg.com/736x/2l/4n/6p/2l4n6p8r0t2v4x6z8b0d2f4h6j8l0n.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Insert Memberships
 INSERT INTO memberships (name, description, price, duration_days, benefits, is_active, created_at, updated_at) VALUES 
@@ -65,12 +65,12 @@ INSERT INTO memberships (name, description, price, duration_days, benefits, is_a
 
 -- Insert Posts
 INSERT INTO posts (title, excerpt, description, category, author, date, is_published, created_at, updated_at) VALUES 
-    ('D-PRESSION remporte la LFL Spring Split 2025', 'Une victoire historique pour notre equipe League of Legends', 'D-PRESSION simpose face a Karmine Corp en finale dans un BO5 epique. Notre roster LoL a demontre une maitrise exceptionnelle tout au long du split.', 'esports', 'Thomas Durand', '2025-01-20 14:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Kyojin KJX remporte la LFL Spring Split 2025', 'Une victoire historique pour notre equipe League of Legends', 'Kyojin KJX simpose face a Karmine Corp en finale dans un BO5 epique. Notre roster LoL a demontre une maitrise exceptionnelle tout au long du split.', 'esports', 'Thomas Durand', '2025-01-20 14:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('Nouvelle collection merchandise ete 2025', 'Decouvrez notre toute nouvelle ligne de vetements officiels', 'En collaboration avec des designers francais renommes, nous lancons une collection exclusive melant streetwear et esport.', 'releases', 'Sophie Martin', '2025-01-18 10:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Interview exclusive avec MaxKill', 'Rencontre avec notre nouvel ADC', 'MaxKill nous partage sa vision de esport, ses ambitions avec D-PRESSION, et ses objectifs pour la saison 2025.', 'interviews', 'Lucas Bernard', '2025-01-16 11:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Partenariat officiel avec Logitech G', 'D-PRESSION sassocie avec Logitech G', 'Nous sommes fiers dannoncer notre partenariat officiel avec Logitech G pour equiper tous nos joueurs.', 'announcements', 'Marie Lefebvre', '2025-01-14 09:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Resultats VCT EMEA - Qualifications reussies', 'Notre equipe Valorant qualifiee pour les playoffs', 'Equipe Valorant D-PRESSION termine 4eme du groupe et se qualifie pour les playoffs EMEA.', 'esports', 'Thomas Durand', '2025-01-12 16:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Event communautaire : Tournoi membres D-PRESSION', 'Participez a notre prochain tournoi reserve aux membres', 'Tournoi exclusif reserve aux membres FAN et plus ! Des prix exclusifs a gagner.', 'community', 'Sophie Martin', '2025-01-10 12:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    ('Interview exclusive avec MaxKill', 'Rencontre avec notre nouvel ADC', 'MaxKill nous partage sa vision de esport, ses ambitions avec Kyojin KJX, et ses objectifs pour la saison 2025.', 'interviews', 'Lucas Bernard', '2025-01-16 11:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Partenariat officiel avec Logitech G', 'Kyojin KJX sassocie avec Logitech G', 'Nous sommes fiers dannoncer notre partenariat officiel avec Logitech G pour equiper tous nos joueurs.', 'announcements', 'Marie Lefebvre', '2025-01-14 09:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Resultats VCT EMEA - Qualifications reussies', 'Notre equipe Valorant qualifiee pour les playoffs', 'Equipe Valorant Kyojin KJX termine 4eme du groupe et se qualifie pour les playoffs EMEA.', 'esports', 'Thomas Durand', '2025-01-12 16:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Event communautaire : Tournoi membres Kyojin KJX', 'Participez a notre prochain tournoi reserve aux membres', 'Tournoi exclusif reserve aux membres FAN et plus ! Des prix exclusifs a gagner.', 'community', 'Sophie Martin', '2025-01-10 12:00:00', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Insert Scrims
 INSERT INTO scrims (team_id, opponent, description, date, status, game, created_at, updated_at) VALUES 
@@ -96,7 +96,8 @@ INSERT INTO schedules (team_id, day_of_week, start_time, end_time, activity, cre
     (1, 'DIMANCHE', '10:00', '18:00', 'Repos et Vie personnelle', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Insert Users
-INSERT INTO users (username, email, role, is_active, created_at, updated_at) VALUES 
-    ('admin', 'admin@d-pression.gg', 'ADMIN', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('coach_titan', 'coach@d-pression.gg', 'COACH', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('community_manager', 'community@d-pression.gg', 'MODERATOR', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- Password hash is SHA-256 of 'admin123' encoded in Base64: JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=
+INSERT INTO users (username, email, password_hash, role, is_active, created_at, updated_at) VALUES 
+    ('admin', 'admin@kyojin-kjx.gg', 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=', 'ADMIN', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('coach_titan', 'coach@kyojin-kjx.gg', 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=', 'COACH', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('community_manager', 'community@kyojin-kjx.gg', 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=', 'MODERATOR', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

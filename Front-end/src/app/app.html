@@ -8,12 +8,12 @@
       <!-- Logo Section -->
       <a routerLink="/home" class="nav-logo" (click)="closeMenu()">
         <div class="logo-icon">
-          <span class="logo-text">D</span>
+          <span class="logo-text">KJX</span>
           <div class="logo-glitch"></div>
         </div>
         <div class="logo-wordmark">
-          <span class="wordmark-main">D-PRESSION</span>
-          <span class="wordmark-sub">ESPORTS</span>
+          <span class="wordmark-main">KYOJIN</span>
+          <span class="wordmark-sub">E-SPORTS</span>
         </div>
       </a>
 
@@ -30,13 +30,136 @@
 
       <!-- Right Actions -->
       <div class="nav-actions">
-        <a routerLink="/admin" class="btn-admin" [class.active]="currentRoute === '/admin'">
+        <!-- Admin Button - Only visible for admins -->
+        <a *ngIf="isUserAdmin" routerLink="/admin" class="btn-admin" [class.active]="currentRoute === '/admin'">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
           <span class="btn-text">Admin</span>
         </a>
+
+        <!-- User Info & Logout - When logged in -->
+        <div *ngIf="currentUser" class="profile-menu-container">
+          <button class="profile-trigger" (click)="toggleProfileMenu()">
+            <div class="profile-avatar">
+              <span class="avatar-letter">{{ currentUser.username.charAt(0).toUpperCase() }}</span>
+              <div class="avatar-status"></div>
+            </div>
+            <span class="profile-name">{{ currentUser.username }}</span>
+            <svg class="profile-chevron" [class.open]="isProfileMenuOpen" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          <!-- Profile Dropdown Menu -->
+          <div class="profile-dropdown" [class.active]="isProfileMenuOpen">
+            <div class="dropdown-header">
+              <div class="dropdown-avatar">
+                <span class="avatar-letter-large">{{ currentUser.username.charAt(0).toUpperCase() }}</span>
+                <div class="avatar-badge" [class.admin]="isUserAdmin">
+                  {{ isUserAdmin ? '👑' : '⭐' }}
+                </div>
+              </div>
+              <div class="dropdown-user-info">
+                <span class="dropdown-username">{{ currentUser.username }}</span>
+                <span class="dropdown-email">{{ currentUser.email }}</span>
+                <span class="dropdown-role" [class.role-admin]="isUserAdmin" [class.role-user]="!isUserAdmin">
+                  {{ currentUser.role }}
+                </span>
+              </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="dropdown-section">
+              <span class="section-title">Mon Compte</span>
+              <a class="dropdown-item" (click)="openProfileModal('info'); toggleProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Informations personnelles</span>
+              </a>
+              <a class="dropdown-item" (click)="openProfileModal('security'); toggleProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span>Sécurité & Mot de passe</span>
+              </a>
+              <a class="dropdown-item" (click)="openProfileModal('preferences'); toggleProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                <span>Préférences</span>
+              </a>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="dropdown-section">
+              <span class="section-title">Activité</span>
+              <a class="dropdown-item" (click)="openProfileModal('orders'); toggleProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <span>Mes commandes</span>
+              </a>
+              <a class="dropdown-item" (click)="openProfileModal('membership'); toggleProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span>Mon abonnement</span>
+              </a>
+              <a class="dropdown-item" (click)="openProfileModal('notifications'); toggleProfileMenu()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span>Notifications</span>
+                <span class="notification-badge">3</span>
+              </a>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="dropdown-section">
+              <span class="section-title">Stats</span>
+              <div class="dropdown-stats">
+                <div class="stat-item">
+                  <span class="stat-value">{{ userStats.orderCount }}</span>
+                  <span class="stat-label">Commandes</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">{{ userStats.memberDays }}</span>
+                  <span class="stat-label">Jours membre</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">{{ userStats.points }}</span>
+                  <span class="stat-label">Points</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <button class="dropdown-logout" (click)="logout(); toggleProfileMenu()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              <span>Déconnexion</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Click outside to close -->
+        <div *ngIf="isProfileMenuOpen" class="profile-overlay" (click)="toggleProfileMenu()"></div>
         
         <!-- Mobile Menu Toggle -->
         <button class="nav-toggle" (click)="toggleMenu()" [class.active]="isMenuOpen">
@@ -60,7 +183,7 @@
   <nav class="mobile-nav" [class.active]="isMenuOpen">
     <div class="mobile-nav-header">
       <div class="mobile-logo">
-        <span>D-PRESSION</span>
+        <span>KYOJIN KJX</span>
       </div>
       <button class="mobile-close" (click)="closeMenu()">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -87,7 +210,8 @@
       
       <div class="mobile-nav-divider"></div>
       
-      <a routerLink="/admin" class="mobile-nav-link mobile-nav-admin" (click)="closeMenu()">
+      <!-- Admin link - only for admins -->
+      <a *ngIf="isUserAdmin" routerLink="/admin" class="mobile-nav-link mobile-nav-admin" (click)="closeMenu()">
         <span class="mobile-nav-number">⚙</span>
         <span class="mobile-nav-label">Panel Admin</span>
         <svg class="mobile-nav-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -95,6 +219,17 @@
           <polyline points="12 5 19 12 12 19"/>
         </svg>
       </a>
+
+      <!-- Logout button for mobile - when logged in -->
+      <button *ngIf="currentUser" class="mobile-nav-link mobile-nav-logout" (click)="logout(); closeMenu()">
+        <span class="mobile-nav-number">👋</span>
+        <span class="mobile-nav-label">Déconnexion ({{ currentUser.username }})</span>
+        <svg class="mobile-nav-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
     </div>
 
     <div class="mobile-nav-footer">
@@ -120,7 +255,7 @@
           </svg>
         </a>
       </div>
-      <p class="mobile-copyright">© 2025 D-PRESSION ESPORTS</p>
+      <p class="mobile-copyright">© 2025 KYOJIN KJX E-SPORTS</p>
     </div>
   </nav>
 
@@ -138,8 +273,8 @@
       <div class="footer-top">
         <div class="footer-brand">
           <div class="footer-logo">
-            <span class="footer-logo-text">D-PRESSION</span>
-            <span class="footer-logo-sub">ESPORTS</span>
+            <span class="footer-logo-text">KYOJIN KJX</span>
+            <span class="footer-logo-sub">E-SPORTS</span>
           </div>
           <p class="footer-tagline">L'excellence compétitive, sans compromis.</p>
           
@@ -194,7 +329,7 @@
 
       <!-- Footer Bottom -->
       <div class="footer-bottom">
-        <p class="footer-copyright">© 2025 D-PRESSION ESPORTS. Tous droits réservés.</p>
+        <p class="footer-copyright">© 2025 KYOJIN KJX E-SPORTS. Tous droits réservés.</p>
         <div class="footer-badges">
           <span class="footer-badge">🎮 Esports Excellence</span>
           <span class="footer-badge">🏆 Since 2024</span>
@@ -202,5 +337,230 @@
       </div>
     </div>
   </footer>
+
+  <!-- Profile Modal -->
+  <div class="profile-modal-overlay" *ngIf="isProfileModalOpen" (click)="closeProfileModal()">
+    <div class="profile-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <ng-container [ngSwitch]="profileModalTab">
+            <span *ngSwitchCase="'info'">👤 Informations personnelles</span>
+            <span *ngSwitchCase="'security'">🔐 Sécurité</span>
+            <span *ngSwitchCase="'preferences'">⚙️ Préférences</span>
+            <span *ngSwitchCase="'orders'">📦 Mes commandes</span>
+            <span *ngSwitchCase="'membership'">⭐ Mon abonnement</span>
+            <span *ngSwitchCase="'notifications'">🔔 Notifications</span>
+          </ng-container>
+        </h2>
+        <button class="modal-close" (click)="closeProfileModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Informations personnelles -->
+        <div *ngIf="profileModalTab === 'info'" class="modal-section">
+          <div class="profile-card">
+            <div class="profile-card-avatar">
+              <span class="avatar-huge">{{ currentUser?.username?.charAt(0)?.toUpperCase() }}</span>
+              <button class="change-avatar-btn">📷 Changer</button>
+            </div>
+            <div class="profile-card-info">
+              <div class="info-group">
+                <label>Nom d'utilisateur</label>
+                <input type="text" [value]="currentUser?.username" class="profile-input" />
+              </div>
+              <div class="info-group">
+                <label>Email</label>
+                <input type="email" [value]="currentUser?.email" class="profile-input" />
+              </div>
+              <div class="info-group">
+                <label>Rôle</label>
+                <input type="text" [value]="currentUser?.role" class="profile-input" disabled />
+              </div>
+              <div class="info-group">
+                <label>Membre depuis</label>
+                <input type="text" value="Décembre 2025" class="profile-input" disabled />
+              </div>
+              <button class="save-btn">💾 Sauvegarder les modifications</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sécurité -->
+        <div *ngIf="profileModalTab === 'security'" class="modal-section">
+          <div class="security-card">
+            <h3>🔑 Changer le mot de passe</h3>
+            <div class="info-group">
+              <label>Mot de passe actuel</label>
+              <input type="password" class="profile-input" placeholder="••••••••" />
+            </div>
+            <div class="info-group">
+              <label>Nouveau mot de passe</label>
+              <input type="password" class="profile-input" placeholder="••••••••" />
+            </div>
+            <div class="info-group">
+              <label>Confirmer le nouveau mot de passe</label>
+              <input type="password" class="profile-input" placeholder="••••••••" />
+            </div>
+            <button class="save-btn">🔒 Mettre à jour le mot de passe</button>
+          </div>
+
+          <div class="security-card">
+            <h3>🛡️ Authentification à deux facteurs</h3>
+            <p>Ajoutez une couche de sécurité supplémentaire à votre compte.</p>
+            <button class="enable-2fa-btn">Activer la 2FA</button>
+          </div>
+
+          <div class="security-card danger">
+            <h3>⚠️ Zone dangereuse</h3>
+            <p>Supprimer définitivement votre compte et toutes vos données.</p>
+            <button class="delete-account-btn">Supprimer mon compte</button>
+          </div>
+        </div>
+
+        <!-- Préférences -->
+        <div *ngIf="profileModalTab === 'preferences'" class="modal-section">
+          <div class="preference-card">
+            <h3>🌙 Apparence</h3>
+            <div class="preference-option">
+              <span>Thème sombre</span>
+              <label class="toggle-switch">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="preference-option">
+              <span>Animations</span>
+              <label class="toggle-switch">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="preference-card">
+            <h3>🔔 Notifications</h3>
+            <div class="preference-option">
+              <span>Notifications par email</span>
+              <label class="toggle-switch">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="preference-option">
+              <span>Alertes matchs</span>
+              <label class="toggle-switch">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="preference-option">
+              <span>Newsletter</span>
+              <label class="toggle-switch">
+                <input type="checkbox" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="preference-card">
+            <h3>🌍 Langue & Région</h3>
+            <div class="info-group">
+              <label>Langue</label>
+              <select class="profile-select">
+                <option selected>🇫🇷 Français</option>
+                <option>🇬🇧 English</option>
+                <option>🇪🇸 Español</option>
+                <option>🇩🇪 Deutsch</option>
+              </select>
+            </div>
+            <div class="info-group">
+              <label>Fuseau horaire</label>
+              <select class="profile-select">
+                <option selected>Europe/Paris (UTC+1)</option>
+                <option>Europe/London (UTC+0)</option>
+                <option>America/New_York (UTC-5)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mes commandes -->
+        <div *ngIf="profileModalTab === 'orders'" class="modal-section">
+          <div class="orders-empty" *ngIf="true">
+            <span class="empty-icon">📦</span>
+            <h3>Aucune commande</h3>
+            <p>Vous n'avez pas encore passé de commande.</p>
+            <a routerLink="/shop" class="shop-link-btn" (click)="closeProfileModal()">Visiter la boutique</a>
+          </div>
+        </div>
+
+        <!-- Mon abonnement -->
+        <div *ngIf="profileModalTab === 'membership'" class="modal-section">
+          <div class="membership-card">
+            <div class="membership-status free">
+              <span class="membership-icon">🎮</span>
+              <h3>Membre Gratuit</h3>
+              <p>Profitez d'avantages exclusifs en passant au premium !</p>
+            </div>
+            <div class="membership-benefits">
+              <h4>Avantages actuels :</h4>
+              <ul>
+                <li>✅ Accès au contenu de base</li>
+                <li>✅ Participation à la communauté</li>
+                <li>❌ Accès aux scrims en direct</li>
+                <li>❌ Réductions boutique</li>
+                <li>❌ Contenu exclusif</li>
+              </ul>
+            </div>
+            <a routerLink="/membership" class="upgrade-btn" (click)="closeProfileModal()">⭐ Passer Premium</a>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div *ngIf="profileModalTab === 'notifications'" class="modal-section">
+          <div class="notifications-list">
+            <div class="notification-item unread">
+              <span class="notif-icon">🏆</span>
+              <div class="notif-content">
+                <strong>Victoire de Kyojin KJX !</strong>
+                <p>Notre équipe LoL a remporté son match contre Karmine Corp</p>
+                <span class="notif-time">Il y a 2 heures</span>
+              </div>
+            </div>
+            <div class="notification-item unread">
+              <span class="notif-icon">🛒</span>
+              <div class="notif-content">
+                <strong>Nouvelle collection disponible</strong>
+                <p>Découvrez les nouveaux maillots 2025 dans la boutique</p>
+                <span class="notif-time">Il y a 5 heures</span>
+              </div>
+            </div>
+            <div class="notification-item unread">
+              <span class="notif-icon">📅</span>
+              <div class="notif-content">
+                <strong>Match à venir</strong>
+                <p>Kyojin KJX vs Team Vitality - Demain à 18h</p>
+                <span class="notif-time">Il y a 1 jour</span>
+              </div>
+            </div>
+            <div class="notification-item">
+              <span class="notif-icon">👋</span>
+              <div class="notif-content">
+                <strong>Bienvenue chez Kyojin KJX !</strong>
+                <p>Merci d'avoir rejoint notre communauté</p>
+                <span class="notif-time">Il y a 3 jours</span>
+              </div>
+            </div>
+          </div>
+          <button class="mark-read-btn">✓ Tout marquer comme lu</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>

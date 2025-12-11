@@ -23,7 +23,7 @@
           <span class="title-line accent">L'ÉLITE</span>
         </h1>
         <p class="page-subtitle">
-          Devenez membre de la communauté D-PRESSION et accédez à des avantages 
+          Devenez membre de la communauté Kyojin KJX et accédez à des avantages 
           exclusifs : contenus backstage, réductions, Discord privé et bien plus.
         </p>
         
@@ -131,7 +131,7 @@
         <div class="feature-card animate-on-scroll">
           <div class="feature-icon">🛍️</div>
           <h3 class="feature-title">Réductions Boutique</h3>
-          <p class="feature-text">Profitez de remises exclusives sur tout le merchandise officiel D-PRESSION.</p>
+          <p class="feature-text">Profitez de remises exclusives sur tout le merchandise officiel Kyojin KJX.</p>
         </div>
         
         <div class="feature-card animate-on-scroll">
@@ -223,7 +223,7 @@
         <div class="cta-content">
           <h2 class="cta-title">Prêt à rejoindre la famille ?</h2>
           <p class="cta-text">
-            Choisissez votre formule et devenez membre de la communauté D-PRESSION dès aujourd'hui.
+            Choisissez votre formule et devenez membre de la communauté Kyojin KJX dès aujourd'hui.
           </p>
           <div class="cta-actions">
             <a href="#" class="btn-primary btn-large">
@@ -240,4 +240,363 @@
       </div>
     </div>
   </section>
+</div>
+
+<!-- ========================================
+     PAYMENT MODAL
+     ======================================== -->
+<div class="payment-modal-overlay" *ngIf="showPaymentModal" (click)="closePaymentModal()">
+  <div class="payment-modal" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <h2 class="modal-title">
+          {{ paymentStep === 'success' ? '✅ Paiement réussi' : 
+             paymentStep === 'error' ? '❌ Erreur' :
+             paymentStep === 'processing' ? '⏳ Traitement...' : '💳 Paiement' }}
+        </h2>
+        <p class="modal-subtitle" *ngIf="selectedMembership && paymentStep !== 'success'">
+          {{ selectedMembership.name }} - {{ formatPrice(selectedMembership.price) }}{{ selectedMembership.period }}
+        </p>
+      </div>
+      <button class="modal-close" (click)="closePaymentModal()" *ngIf="paymentStep !== 'processing'">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Step: Select Payment Method -->
+    <div class="modal-content" *ngIf="paymentStep === 'select'">
+      <p class="method-instruction">Choisissez votre méthode de paiement :</p>
+      
+      <div class="payment-methods-grid">
+        <button class="payment-method-btn" (click)="selectPaymentMethod('card')">
+          <div class="method-icon">💳</div>
+          <div class="method-info">
+            <span class="method-name">Carte bancaire</span>
+            <span class="method-desc">Visa, Mastercard, Amex</span>
+          </div>
+          <svg class="method-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+        
+        <button class="payment-method-btn paypal" (click)="selectPaymentMethod('paypal')">
+          <div class="method-icon">🅿️</div>
+          <div class="method-info">
+            <span class="method-name">PayPal</span>
+            <span class="method-desc">Paiement sécurisé PayPal</span>
+          </div>
+          <svg class="method-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+        
+        <button class="payment-method-btn stripe" (click)="selectPaymentMethod('stripe')">
+          <div class="method-icon">⚡</div>
+          <div class="method-info">
+            <span class="method-name">Stripe</span>
+            <span class="method-desc">Paiement rapide et sécurisé</span>
+          </div>
+          <svg class="method-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+        
+        <button class="payment-method-btn wise" (click)="selectPaymentMethod('wise')">
+          <div class="method-icon">🌍</div>
+          <div class="method-info">
+            <span class="method-name">Wise</span>
+            <span class="method-desc">Transfert international</span>
+          </div>
+          <svg class="method-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="secure-notice">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <span>Paiement 100% sécurisé - Données cryptées SSL</span>
+      </div>
+    </div>
+
+    <!-- Step: Credit Card Form -->
+    <div class="modal-content" *ngIf="paymentStep === 'card'">
+      <button class="back-btn" (click)="backToMethodSelection()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Retour
+      </button>
+      
+      <div class="test-card-info">
+        <span class="test-badge">🧪 TEST</span>
+        <span>Carte: 4242 4242 4242 4242 | Exp: 12/28 | CVV: 123</span>
+      </div>
+      
+      <form class="card-form" (ngSubmit)="processCardPayment()">
+        <div class="form-group">
+          <label class="form-label">Numéro de carte *</label>
+          <div class="card-input-wrapper">
+            <input 
+              type="text" 
+              class="form-input card-number-input"
+              [class.error]="cardErrors['cardNumber']"
+              placeholder="1234 5678 9012 3456"
+              [ngModel]="cardForm.cardNumber"
+              (input)="onCardNumberInput($event)"
+              name="cardNumber"
+              maxlength="19"
+              autocomplete="cc-number"
+            />
+            <span class="card-brand-badge">{{ getCardBrandIcon() }}</span>
+          </div>
+          <span class="error-text" *ngIf="cardErrors['cardNumber']">{{ cardErrors['cardNumber'] }}</span>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group half">
+            <label class="form-label">Date d'expiration *</label>
+            <input 
+              type="text" 
+              class="form-input"
+              [class.error]="cardErrors['expiryDate']"
+              placeholder="MM/YY"
+              [ngModel]="cardForm.expiryDate"
+              (input)="onExpiryInput($event)"
+              name="expiryDate"
+              maxlength="5"
+              autocomplete="cc-exp"
+            />
+            <span class="error-text" *ngIf="cardErrors['expiryDate']">{{ cardErrors['expiryDate'] }}</span>
+          </div>
+          
+          <div class="form-group half">
+            <label class="form-label">CVV *</label>
+            <input 
+              type="text" 
+              class="form-input"
+              [class.error]="cardErrors['cvv']"
+              placeholder="123"
+              [ngModel]="cardForm.cvv"
+              (input)="onCvvInput($event)"
+              name="cvv"
+              maxlength="4"
+              autocomplete="cc-csc"
+            />
+            <span class="error-text" *ngIf="cardErrors['cvv']">{{ cardErrors['cvv'] }}</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Nom du titulaire *</label>
+          <input 
+            type="text" 
+            class="form-input"
+            [class.error]="cardErrors['cardHolder']"
+            placeholder="JEAN DUPONT"
+            [(ngModel)]="cardForm.cardHolder"
+            name="cardHolder"
+            autocomplete="cc-name"
+          />
+          <span class="error-text" *ngIf="cardErrors['cardHolder']">{{ cardErrors['cardHolder'] }}</span>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input 
+            type="email" 
+            class="form-input"
+            [class.error]="cardErrors['email']"
+            placeholder="votre@email.com"
+            [(ngModel)]="cardForm.email"
+            name="email"
+            autocomplete="email"
+          />
+          <span class="error-text" *ngIf="cardErrors['email']">{{ cardErrors['email'] }}</span>
+        </div>
+        
+        <div class="form-divider">
+          <span>Adresse de facturation (optionnel)</span>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Adresse</label>
+          <input 
+            type="text" 
+            class="form-input"
+            placeholder="123 Rue Example"
+            [(ngModel)]="cardForm.billingAddress"
+            name="billingAddress"
+          />
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group half">
+            <label class="form-label">Ville</label>
+            <input 
+              type="text" 
+              class="form-input"
+              placeholder="Paris"
+              [(ngModel)]="cardForm.billingCity"
+              name="billingCity"
+            />
+          </div>
+          <div class="form-group half">
+            <label class="form-label">Code postal</label>
+            <input 
+              type="text" 
+              class="form-input"
+              placeholder="75001"
+              [(ngModel)]="cardForm.billingPostalCode"
+              name="billingPostalCode"
+            />
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-pay">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Payer {{ formatPrice(selectedMembership?.price || 0) }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Step: PayPal -->
+    <div class="modal-content" *ngIf="paymentStep === 'paypal'">
+      <button class="back-btn" (click)="backToMethodSelection()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Retour
+      </button>
+      
+      <div class="paypal-section">
+        <div class="paypal-logo">🅿️ PayPal</div>
+        <p class="paypal-info">Cliquez sur le bouton ci-dessous pour payer via PayPal de manière sécurisée.</p>
+        <div id="paypal-button-container" class="paypal-button-container"></div>
+      </div>
+    </div>
+
+    <!-- Step: Stripe -->
+    <div class="modal-content" *ngIf="paymentStep === 'stripe'">
+      <button class="back-btn" (click)="backToMethodSelection()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Retour
+      </button>
+      
+      <div class="stripe-section">
+        <div class="stripe-logo">⚡ Stripe</div>
+        
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input 
+            type="email" 
+            class="form-input"
+            [class.error]="cardErrors['email']"
+            placeholder="votre@email.com"
+            [(ngModel)]="cardForm.email"
+          />
+          <span class="error-text" *ngIf="cardErrors['email']">{{ cardErrors['email'] }}</span>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Carte bancaire</label>
+          <div id="stripe-card-element" class="stripe-element"></div>
+        </div>
+        
+        <button class="btn-pay stripe-btn" (click)="processStripePayment()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          Payer {{ formatPrice(selectedMembership?.price || 0) }} avec Stripe
+        </button>
+      </div>
+    </div>
+
+    <!-- Step: Wise -->
+    <div class="modal-content" *ngIf="paymentStep === 'wise'">
+      <button class="back-btn" (click)="backToMethodSelection()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Retour
+      </button>
+      
+      <div class="wise-section">
+        <div class="wise-logo">🌍 Wise</div>
+        <p class="wise-info">Transfert international sécurisé avec Wise (anciennement TransferWise).</p>
+        
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input 
+            type="email" 
+            class="form-input"
+            [class.error]="cardErrors['email']"
+            placeholder="votre@email.com"
+            [(ngModel)]="cardForm.email"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Nom complet</label>
+          <input 
+            type="text" 
+            class="form-input"
+            placeholder="Jean Dupont"
+            [(ngModel)]="cardForm.cardHolder"
+          />
+        </div>
+        
+        <button class="btn-pay wise-btn" (click)="processWisePayment()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          Payer {{ formatPrice(selectedMembership?.price || 0) }} avec Wise
+        </button>
+      </div>
+    </div>
+
+    <!-- Step: Processing -->
+    <div class="modal-content processing" *ngIf="paymentStep === 'processing'">
+      <div class="processing-animation">
+        <div class="spinner"></div>
+      </div>
+      <h3 class="processing-title">Traitement en cours...</h3>
+      <p class="processing-text">Veuillez ne pas fermer cette fenêtre.</p>
+    </div>
+
+    <!-- Step: Success -->
+    <div class="modal-content success" *ngIf="paymentStep === 'success'">
+      <div class="success-icon">✅</div>
+      <h3 class="success-title">Paiement réussi !</h3>
+      <p class="success-text">
+        Merci pour votre abonnement {{ selectedMembership?.name }}.<br>
+        Un email de confirmation a été envoyé.
+      </p>
+      <div class="transaction-info" *ngIf="paymentResult">
+        <span class="transaction-label">Transaction ID:</span>
+        <span class="transaction-value">{{ paymentResult.transactionId }}</span>
+      </div>
+      <button class="btn-primary" (click)="closePaymentModal()">Fermer</button>
+    </div>
+
+    <!-- Step: Error -->
+    <div class="modal-content error" *ngIf="paymentStep === 'error'">
+      <div class="error-icon">❌</div>
+      <h3 class="error-title">Échec du paiement</h3>
+      <p class="error-text">{{ paymentError }}</p>
+      <div class="error-actions">
+        <button class="btn-secondary" (click)="retryPayment()">Réessayer</button>
+        <button class="btn-outline" (click)="backToMethodSelection()">Changer de méthode</button>
+      </div>
+    </div>
+  </div>
 </div>
